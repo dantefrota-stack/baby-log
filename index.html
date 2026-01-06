@@ -53,21 +53,41 @@
             backdrop-filter: blur(10px);
         }
 
+        /* --- DATE PICKER FIX (FULL CLICK AREA) --- */
+        .date-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            /* Garante que o container tenha tamanho para o clique */
+            min-width: 120px; 
+            justify-content: flex-end;
+        }
+
         #date-display {
             color: var(--ios-blue);
             font-size: 19px;
             font-weight: 500;
-            cursor: pointer;
+            pointer-events: none; /* Deixa o clique passar para o input */
         }
 
         input[type="date"] {
-            opacity: 0;
             position: absolute;
-            right: 20px;
-            width: 100px;
-            height: 40px;
+            top: 0;
+            left: 0;
+            width: 100%;  /* Cobre todo o container */
+            height: 100%; /* Cobre todo o container */
+            opacity: 0;   /* Invisível */
             cursor: pointer;
+            z-index: 10;  /* Garante que fique por cima */
         }
+
+        .calendar-icon {
+            font-size: 24px;
+            color: var(--ios-blue);
+            margin-left: 5px;
+            pointer-events: none;
+        }
+        /* ----------------------------------------- */
 
         /* Lists & Cards */
         .list-group { margin: 24px 16px; }
@@ -371,10 +391,11 @@
 <div id="app-container">
     <header>
         <div id="date-label" style="font-weight: 800; font-size: 24px;">Today</div>
-        <div style="position: relative;">
+        
+        <div class="date-container">
             <span id="date-display">Select Date</span>
             <input type="date" id="date-picker">
-            <span style="font-size: 24px; color: var(--ios-blue); margin-left: 5px;">📅</span>
+            <span class="calendar-icon">📅</span>
         </div>
     </header>
 
@@ -477,7 +498,7 @@
     // State
     let currentDate = new Date();
     let logs = []; 
-    let selectedDiaperType = 'Soft'; // Default updated
+    let selectedDiaperType = 'Soft';
     let currentEditId = null;
 
     window.onload = function() {
@@ -500,7 +521,6 @@
         currentDate = new Date(year, month - 1, day);
         updateDateDisplay();
         renderLogs();
-        checkInputVisibility();
     });
 
     function updateDateDisplay() {
@@ -515,14 +535,6 @@
         const today = new Date();
         const isToday = today.toDateString() === currentDate.toDateString();
         document.getElementById('date-label').innerText = isToday ? 'Today' : 'History';
-    }
-
-    function checkInputVisibility() {
-        const today = new Date();
-        const isToday = today.toDateString() === currentDate.toDateString();
-        const displayVal = isToday ? 'block' : 'none';
-        document.getElementById('input-area').style.display = displayVal;
-        document.getElementById('notes-area').style.display = displayVal;
     }
 
     // --- ADD ACTIONS ---
@@ -565,6 +577,7 @@
     }
 
     function addEntry(type, value, detail, icon, color, timeStr) {
+        // Use currently selected date + time provided
         const entryDate = new Date(currentDate);
         const [hours, minutes] = timeStr.split(':');
         entryDate.setHours(hours, minutes);
@@ -719,14 +732,26 @@
         report += `----------------------------\n`;
         report += `End of Report`;
 
+        // 1. Copy to Clipboard
         navigator.clipboard.writeText(report).then(() => {
+            console.log("Copied");
         }, () => {});
 
+        // 2. Detect Platform for SMS
+        const ua = navigator.userAgent.toLowerCase();
         const encodedReport = encodeURIComponent(report);
-        const smsLink = `sms:&body=${encodedReport}`;
+        let smsLink = "";
+
+        if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
+            smsLink = `sms:&body=${encodedReport}`;
+        } else if (ua.indexOf("android") > -1) {
+            smsLink = `sms:?body=${encodedReport}`;
+        } else {
+            alert("REPORT COPIED!\n\nPaste it into your messages.\n\n" + report);
+            return;
+        }
+
         window.location.href = smsLink;
-        
-        alert("REPORT GENERATED!\n\nCopied to clipboard.\n\n" + report);
     }
 
     function saveData() { localStorage.setItem('babyLogData', JSON.stringify(logs)); }
