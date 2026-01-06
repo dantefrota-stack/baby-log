@@ -3,268 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Baby Log Pro - Final</title>
+    <title>Baby Log Pro</title>
     
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7-icons/css/framework7-icons.css">
 
     <style>
         :root {
             --ios-blue: #007AFF; --ios-bg: #F2F2F7; --ios-card: #FFFFFF;
-            --ios-text: #000000; --ios-gray: #6e6e73; --ios-orange: #FF9500;
-            --ios-green: #28a745; --ios-pink: #FF2D55;
+            --ios-text: #000000; --ios-gray: #8E8E93; --ios-red: #FF3B30;
         }
 
         body { 
             margin: 0; padding: 0; background-color: var(--ios-bg); 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--ios-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--ios-text); -webkit-font-smoothing: antialiased;
         }
 
         #app-frame { max-width: 500px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
 
+        /* --- HEADER --- */
         .navbar {
-            background: rgba(255,255,255,0.85); backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
             position: sticky; top: 0; z-index: 100;
-            padding: 25px 20px 15px; border-bottom: 0.5px solid #C6C6C8;
+            padding: 20px; border-bottom: 1px solid #C6C6C8;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .nav-top { display: flex; justify-content: space-between; align-items: center; }
-        .nav-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
-        .date-badge { background: var(--ios-blue); padding: 10px 18px; border-radius: 25px; font-size: 16px; font-weight: 700; color: #fff; cursor: pointer; }
-
-        .content { padding: 20px; padding-bottom: 140px; }
-        .card { background: var(--ios-card); border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 18px; }
-        
-        .card-label { 
-            font-size: 18px; font-weight: 700; color: var(--ios-text); 
-            margin-bottom: 15px; display: flex; align-items: center; gap: 8px; 
+        .nav-title { font-size: 28px; font-weight: 800; }
+        .date-badge { 
+            background: var(--ios-blue); color: white; padding: 8px 16px; 
+            border-radius: 20px; font-weight: 700; font-size: 16px; cursor: pointer;
         }
 
-        .input-group { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; }
-        input, select, textarea { 
-            background: #F2F2F7; border: none; border-radius: 12px; 
-            padding: 14px; font-size: 18px; width: 100%; outline: none; 
+        /* --- CONTENT --- */
+        .content { padding: 20px; padding-bottom: 150px; }
+        
+        .card { 
+            background: var(--ios-card); border-radius: 16px; 
+            margin-bottom: 24px; padding: 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
         }
-        
-        .time-input { width: 120px; text-align: center; color: var(--ios-blue); font-weight: 700; }
-        
-        .btn-ios-add { 
-            background: var(--ios-blue); color: white; border: none; border-radius: 50%; 
-            width: 50px; height: 50px; font-size: 28px; 
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
-        }
-        
-        .list-item { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid #F2F2F7; font-size: 18px; align-items: center; }
-        .item-time { color: var(--ios-gray); font-size: 15px; font-weight: 700; margin-right: 12px; background: #eee; padding: 4px 8px; border-radius: 6px; }
-        .item-del { color: #FF3B30; font-size: 22px; padding-left: 20px; font-weight: bold; }
 
-        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 25px; box-sizing: border-box; background: linear-gradient(to top, white 70%, transparent); display: flex; justify-content: center; }
-        .btn-send { background: #000; color: white; border: none; width: 100%; max-width: 400px; height: 60px; border-radius: 18px; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .card-header { 
+            font-size: 20px; font-weight: 800; margin-bottom: 15px; 
+            display: flex; align-items: center; gap: 8px; 
+        }
+
+        /* --- INPUTS --- */
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        
+        input, select, textarea {
+            background: #F2F2F7; border: none; border-radius: 12px;
+            padding: 15px; font-size: 18px; width: 100%; outline: none;
+            color: #000; font-family: inherit;
+        }
+        
+        .time-input { width: 130px; text-align: center; color: var(--ios-blue); font-weight: 700; }
+
+        .btn-add {
+            width: 55px; height: 55px; border-radius: 50%; border: none;
+            background: var(--ios-blue); color: white; font-size: 30px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,122,255,0.4); flex-shrink: 0; cursor: pointer;
+        }
+
+        /* --- LISTA DE ITENS (HISTÓRICO) --- */
+        .history-list { border-top: 1px solid #E5E5EA; padding-top: 5px; }
+        
+        .log-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid #F2F2F7; animation: fade 0.3s;
+        }
+        @keyframes fade { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
+
+        .log-info { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; }
+        .log-time { 
+            background: #E5E5EA; color: #555; padding: 4px 8px; border-radius: 6px; 
+            font-size: 14px; font-weight: 700; 
+        }
+        .btn-del {
+            color: var(--ios-red); background: rgba(255,59,48,0.1); 
+            width: 36px; height: 36px; border-radius: 50%; display: flex; 
+            align-items: center; justify-content: center; font-size: 20px; font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
+            padding: 20px; box-sizing: border-box; border-top: 1px solid #ccc;
+            display: flex; justify-content: center;
+        }
+        .btn-send {
+            background: #000; color: white; width: 100%; max-width: 450px;
+            height: 60px; border-radius: 16px; font-size: 20px; font-weight: 700;
+            border: none; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        
+        /* Cores */
+        .c-blue { color: #007AFF; } .bg-blue { background: #007AFF; }
+        .c-green { color: #34C759; } .bg-green { background: #34C759; }
+        .c-orange { color: #FF9500; } .bg-orange { background: #FF9500; }
+        .c-pink { color: #FF2D55; } .bg-pink { background: #FF2D55; }
     </style>
 </head>
 <body>
 
     <div id="app-frame">
         <div class="navbar">
-            <div class="nav-top">
-                <div class="nav-title">Baby Log</div>
-                <div class="date-badge" onclick="document.getElementById('date-input').showPicker()">
-                    <span id="date-display">Today</span>
-                </div>
+            <div class="nav-title">Baby Log</div>
+            <div class="date-badge" onclick="document.getElementById('date-picker').showPicker()">
+                <span id="display-date">Today</span>
             </div>
-            <input type="date" id="date-input" style="opacity: 0; position: absolute; width:1px;">
+            <input type="date" id="date-picker" style="position:absolute; opacity:0; top:0; right:0; width:100px; height:50px;">
         </div>
 
         <div class="content">
+            
             <div class="card">
-                <div class="card-label"><i class="f7-icons c-blue">drop_fill</i> Formula</div>
-                <div class="input-group">
+                <div class="card-header c-blue"><i class="f7-icons">drop_fill</i> Formula</div>
+                <div class="input-row">
                     <input type="number" id="f-oz" placeholder="oz">
                     <input type="time" id="f-time" class="time-input">
-                    <button class="btn-ios-add" onclick="saveEntry('formula')">+</button>
+                    <button class="btn-add bg-blue" onclick="addLog('formula')">+</button>
                 </div>
-                <div id="list-formula"></div>
+                <div id="list-formula" class="history-list"></div>
             </div>
 
             <div class="card">
-                <div class="card-label"><i class="f7-icons c-green">circle_fill</i> Solid Food</div>
-                <div class="input-group">
-                    <input type="text" id="s-desc" placeholder="Food type...">
+                <div class="card-header c-green"><i class="f7-icons">circle_fill</i> Solid Food</div>
+                <div class="input-row">
+                    <input type="text" id="s-desc" placeholder="Food desc...">
                     <input type="time" id="s-time" class="time-input">
-                    <button class="btn-ios-add" style="background:var(--ios-green)" onclick="saveEntry('solid')">+</button>
+                    <button class="btn-add bg-green" onclick="addLog('solid')">+</button>
                 </div>
-                <div id="list-solid"></div>
+                <div id="list-solid" class="history-list"></div>
             </div>
 
             <div class="card">
-                <div class="card-label"><i class="f7-icons c-orange">moon_fill</i> Nap</div>
-                <div class="input-group">
+                <div class="card-header c-orange"><i class="f7-icons">moon_fill</i> Nap</div>
+                <div class="input-row">
                     <input type="time" id="n-start">
-                    <span style="font-weight: 800; font-size: 12px;">TO</span>
+                    <span style="align-self:center; font-weight:bold; font-size:12px; color:#999">TO</span>
                     <input type="time" id="n-end">
-                    <button class="btn-ios-add" style="background:var(--ios-orange)" onclick="saveEntry('nap')">+</button>
+                    <button class="btn-add bg-orange" onclick="addLog('nap')">+</button>
                 </div>
-                <div id="list-nap"></div>
+                <div id="list-nap" class="history-list"></div>
             </div>
 
             <div class="card">
-                <div class="card-label"><i class="f7-icons c-pink">layers_fill</i> Diaper</div>
-                <div class="input-group">
+                <div class="card-header c-pink"><i class="f7-icons">layers_fill</i> Diaper</div>
+                <div class="input-row">
                     <select id="d-type">
                         <option value="Soft 💩">Soft 💩</option>
                         <option value="Hard 💩">Hard 💩</option>
                         <option value="Runny 💩">Runny 💩</option>
                     </select>
-                    <button class="btn-ios-add" style="background:var(--ios-pink)" onclick="saveEntry('diaper')">+</button>
+                    <button class="btn-add bg-pink" onclick="addLog('diaper')">+</button>
                 </div>
-                <div id="list-diaper"></div>
+                <div id="list-diaper" class="history-list"></div>
             </div>
 
             <div class="card">
-                <div class="card-label">Daily Notes</div>
-                <textarea id="obs-text" rows="4" placeholder="Notes..." onchange="saveNotes()"></textarea>
+                <div class="card-header">Daily Notes</div>
+                <textarea id="obs-text" rows="4" placeholder="How was the day..." onblur="saveNotes()"></textarea>
             </div>
         </div>
 
         <div class="footer">
-            <button class="btn-send" onclick="handleShare()">
-                <i class="f7-icons">paperplane_fill</i> SEND SUMMARY
+            <button class="btn-send" onclick="sendSummary()">
+                <i class="f7-icons">paperplane_fill</i> Send Summary
             </button>
         </div>
     </div>
 
     <script>
-        // Substitua pelos seus dados do Firebase
+        // --- 1. CONFIGURAÇÃO (Usando seus dados originais) ---
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            databaseURL: "SUA_DATABASE_URL",
-            projectId: "SEU_ID",
+            apiKey: "AIzaSyDiqYfep_8Myjo1oJ688hLx1UT201gzWyM",
+            authDomain: "babylogapp-cb457.firebaseapp.com",
+            projectId: "babylogapp-cb457",
+            storageBucket: "babylogapp-cb457.firebasestorage.app",
+            messagingSenderId: "436304963218",
+            appId: "1:436304963218:web:18767942ac7570192e684b",
+            // IMPORTANTE: URL corrigida para o padrão atual
+            databaseURL: "https://babylogapp-cb457-default-rtdb.firebaseio.com"
         };
-        firebase.initializeApp(firebaseConfig);
+        
+        // Iniciar Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch(e) { console.error("Firebase Error:", e); }
         const db = firebase.database();
 
-        let currentLogs = [];
-        const dateIn = document.getElementById('date-input');
-        const dateDisp = document.getElementById('date-display');
+        // --- 2. GERENCIAMENTO DE DATA ---
+        const datePicker = document.getElementById('date-picker');
+        const displayDate = document.getElementById('display-date');
         
-        const today = new Date().toISOString().split('T')[0];
-        dateIn.value = today;
-        updateDisplayDate(today);
+        // Define data inicial como HOJE
+        let currentDate = new Date().toLocaleDateString('en-CA'); // Formato YYYY-MM-DD
+        datePicker.value = currentDate;
+        updateDateLabel(currentDate);
 
-        dateIn.addEventListener('change', (e) => {
-            const newDate = e.target.value;
-            updateDisplayDate(newDate);
-            loadData(newDate);
+        datePicker.addEventListener('change', (e) => {
+            currentDate = e.target.value;
+            updateDateLabel(currentDate);
+            listenToData(currentDate); // Recarrega dados ao mudar data
         });
 
-        function updateDisplayDate(dateStr) {
-            const [y, m, d] = dateStr.split('-');
-            dateDisp.innerText = `${m}/${d}/${y}`;
+        function updateDateLabel(ymd) {
+            const parts = ymd.split('-');
+            displayDate.innerText = `${parts[1]}/${parts[2]}/${parts[0]}`;
         }
 
+        // --- 3. FORMATAR HORA (AM/PM) ---
         function formatTime(timeStr) {
-            if(!timeStr) return "?";
-            const [h, m] = timeStr.split(':');
-            const hh = parseInt(h);
-            const suffix = hh >= 12 ? 'PM' : 'AM';
-            const h12 = hh % 12 || 12;
-            return `${h12}:${m}${suffix}`;
+            if (!timeStr) return "";
+            let [h, m] = timeStr.split(':');
+            let hours = parseInt(h);
+            let suffix = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12; 
+            return `${hours}:${m} ${suffix}`;
         }
 
-        function loadData(date) {
-            db.ref(`logs/${date}`).on('value', (snapshot) => {
-                const data = snapshot.val();
-                currentLogs = [];
-                if (data) {
-                    for (let id in data) {
-                        if(id !== 'notes') currentLogs.push({id, ...data[id]});
-                    }
-                    document.getElementById('obs-text').value = data.notes || "";
-                } else {
-                    document.getElementById('obs-text').value = "";
-                }
-                renderLogs();
+        // --- 4. ESCUTAR DADOS (Sincronização Real-Time) ---
+        let currentRef = null;
+        
+        function listenToData(date) {
+            if (currentRef) currentRef.off(); // Para de ouvir o dia anterior
+            
+            currentRef = db.ref('logs/' + date);
+            
+            currentRef.on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                renderAll(data);
+            }, (error) => {
+                alert("Erro de Permissão: O Firebase não deixou ler os dados. Verifique as 'Rules' no console.");
             });
         }
 
-        function saveEntry(type) {
-            const date = dateIn.value;
-            let entry = { type };
+        // --- 5. RENDERIZAR NA TELA ---
+        function renderAll(data) {
+            // Limpa todas as listas primeiro
+            ['formula', 'solid', 'nap', 'diaper'].forEach(type => {
+                document.getElementById('list-' + type).innerHTML = '';
+            });
 
-            if(type === 'formula') {
-                const oz = document.getElementById('f-oz').value;
-                const t = document.getElementById('f-time').value;
-                if(!oz || !t) return;
+            // Notas
+            document.getElementById('obs-text').value = data.notes || "";
+
+            // Loop por cada item salvo
+            Object.keys(data).forEach(key => {
+                if (key === 'notes') return; // Ignora nota no loop
+                
+                const item = data[key];
+                const container = document.getElementById('list-' + item.type);
+                
+                if (container) {
+                    const div = document.createElement('div');
+                    div.className = 'log-item';
+                    div.innerHTML = `
+                        <div class="log-info">
+                            ${item.timeLabel ? `<span class="log-time">${item.timeLabel}</span>` : ''}
+                            <span>${item.display}</span>
+                        </div>
+                        <div class="btn-del" onclick="deleteItem('${key}')">×</div>
+                    `;
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        // --- 6. ADICIONAR DADOS (Salvar) ---
+        function addLog(type) {
+            let entry = { type: type, timestamp: Date.now() };
+
+            if (type === 'formula') {
+                let oz = document.getElementById('f-oz').value;
+                let t = document.getElementById('f-time').value;
+                if (!oz || !t) return alert("Please enter Oz and Time");
                 entry.display = oz + " oz";
                 entry.timeLabel = formatTime(t);
+                // Limpar campos
                 document.getElementById('f-oz').value = "";
             } 
-            else if(type === 'solid') {
-                const desc = document.getElementById('s-desc').value;
-                const t = document.getElementById('s-time').value;
-                if(!desc || !t) return;
+            else if (type === 'solid') {
+                let desc = document.getElementById('s-desc').value;
+                let t = document.getElementById('s-time').value;
+                if (!desc || !t) return alert("Please enter Description and Time");
                 entry.display = desc;
                 entry.timeLabel = formatTime(t);
                 document.getElementById('s-desc').value = "";
             }
-            else if(type === 'nap') {
-                const s = document.getElementById('n-start').value;
-                const e = document.getElementById('n-end').value;
-                if(!s) return;
-                entry.display = `${formatTime(s)} - ${e ? formatTime(e) : '?'}`;
+            else if (type === 'nap') {
+                let start = document.getElementById('n-start').value;
+                let end = document.getElementById('n-end').value;
+                if (!start) return alert("Please enter Start Time");
+                entry.display = `${formatTime(start)} - ${end ? formatTime(end) : '?'}`;
                 entry.timeLabel = "Nap";
+                // Limpar (opcional, pode manter se for editar)
+                document.getElementById('n-start').value = "";
+                document.getElementById('n-end').value = "";
             }
-            else if(type === 'diaper') {
+            else if (type === 'diaper') {
                 entry.display = document.getElementById('d-type').value;
-                entry.timeLabel = "";
+                entry.timeLabel = ""; // Fralda não tem hora na lista
             }
 
-            db.ref(`logs/${date}`).push(entry);
+            // O SEGRED0: USAR .PUSH() PARA CRIAR MÚLTIPLAS ENTRADAS
+            db.ref('logs/' + currentDate).push(entry, (error) => {
+                if (error) alert("Erro ao salvar: " + error.message);
+            });
+        }
+
+        // --- 7. DELETAR E NOTAS ---
+        function deleteItem(key) {
+            if (confirm("Delete this entry?")) {
+                db.ref('logs/' + currentDate + '/' + key).remove();
+            }
         }
 
         function saveNotes() {
-            db.ref(`logs/${dateIn.value}/notes`).set(document.getElementById('obs-text').value);
+            const txt = document.getElementById('obs-text').value;
+            db.ref('logs/' + currentDate + '/notes').set(txt);
         }
 
-        function deleteEntry(id) {
-            if(confirm("Delete?")) db.ref(`logs/${dateIn.value}/${id}`).remove();
-        }
+        // --- 8. ENVIAR RELATÓRIO ---
+        function sendSummary() {
+            // Pega os dados atuais do banco para garantir que está atualizado
+            db.ref('logs/' + currentDate).once('value').then(snap => {
+                const data = snap.val() || {};
+                let report = `👶 *Baby Log - ${displayDate.innerText}*\n`;
+                
+                // Categorias
+                const cats = {
+                    'formula': '🍼 Formula', 
+                    'solid': '🍎 Solid Food', 
+                    'nap': '💤 Naps', 
+                    'diaper': '💩 Diaper'
+                };
 
-        function renderLogs() {
-            ['formula', 'solid', 'nap', 'diaper'].forEach(t => document.getElementById(`list-${t}`).innerHTML = '');
-            currentLogs.forEach(log => {
-                const div = document.createElement('div');
-                div.className = 'list-item';
-                div.innerHTML = `
-                    <div>${log.timeLabel ? `<span class="item-time">${log.timeLabel}</span>` : ''}<span>${log.display}</span></div>
-                    <span class="item-del" onclick="deleteEntry('${log.id}')">×</span>
-                `;
-                document.getElementById(`list-${log.type}`).appendChild(div);
-            });
-        }
+                for (let key in cats) {
+                    // Filtra itens deste tipo
+                    let items = [];
+                    Object.values(data).forEach(v => {
+                        if (v.type === key) items.push(v);
+                    });
 
-        function handleShare() {
-            let txt = `👶 *Baby Log - ${dateDisp.innerText}*\n`;
-            const sections = [{key:'formula',l:'🍼 Formula'},{key:'solid',l:'🍎 Food'},{key:'nap',l:'💤 Naps'},{key:'diaper',l:'💩 Diapers'}];
-            sections.forEach(sec => {
-                const items = currentLogs.filter(l => l.type === sec.key);
-                if(items.length > 0) {
-                    txt += `\n${sec.l}:\n`;
-                    items.forEach(i => txt += `• ${i.timeLabel ? i.timeLabel + ': ' : ''}${i.display}\n`);
+                    if (items.length > 0) {
+                        report += `\n${cats[key]}:\n`;
+                        // Ordenar por horário se possível
+                        items.forEach(i => {
+                            report += `• ${i.timeLabel ? i.timeLabel + ': ' : ''}${i.display}\n`;
+                        });
+                    }
+                }
+
+                if (data.notes) report += `\n📝 Notes:\n${data.notes}`;
+
+                // Envia
+                if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                    window.location.href = `sms:?&body=${encodeURIComponent(report)}`;
+                } else {
+                    navigator.clipboard.writeText(report).then(() => alert("Report copied to clipboard!"));
                 }
             });
-            const obs = document.getElementById('obs-text').value;
-            if(obs) txt += `\n📝 Notes:\n${obs}`;
-
-            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                window.location.href = `sms:?&body=${encodeURIComponent(txt)}`;
-            } else {
-                navigator.clipboard.writeText(txt).then(() => alert("Copied!"));
-            }
         }
 
-        loadData(today);
+        // Iniciar ouvindo a data de hoje
+        listenToData(currentDate);
+
     </script>
 </body>
 </html>
