@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>Baby Log Pro - History Edition</title>
+    <title>Baby Log Pro - Final</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
@@ -12,8 +12,8 @@
     <style>
         :root {
             --ios-blue: #007AFF; --ios-bg: #F2F2F7; --ios-card: #FFFFFF;
-            --ios-text: #000000; --ios-gray: #8E8E93; --ios-orange: #FF9500;
-            --ios-green: #34C759; --ios-pink: #FF2D55;
+            --ios-text: #000000; --ios-gray: #6e6e73; --ios-orange: #FF9500;
+            --ios-green: #28a745; --ios-pink: #FF2D55;
         }
 
         body { 
@@ -22,36 +22,45 @@
             color: var(--ios-text);
         }
 
-        #app-frame { max-width: 450px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+        #app-frame { max-width: 500px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
 
         .navbar {
-            background: rgba(255,255,255,0.8); backdrop-filter: blur(15px);
+            background: rgba(255,255,255,0.85); backdrop-filter: blur(20px);
             position: sticky; top: 0; z-index: 100;
-            padding: 20px 20px 10px; border-bottom: 0.5px solid #C6C6C8;
+            padding: 25px 20px 15px; border-bottom: 0.5px solid #C6C6C8;
         }
         .nav-top { display: flex; justify-content: space-between; align-items: center; }
-        .nav-title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; }
-        .date-badge { background: var(--ios-blue); padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; color: #fff; cursor: pointer; }
+        .nav-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+        .date-badge { background: var(--ios-blue); padding: 10px 18px; border-radius: 25px; font-size: 16px; font-weight: 700; color: #fff; cursor: pointer; }
 
-        .content { padding: 15px; padding-bottom: 120px; }
-        .card { background: var(--ios-card); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); padding: 12px; }
-        .card-label { font-size: 12px; font-weight: 600; color: var(--ios-gray); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-
-        .input-group { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
-        input, select, textarea { background: #F2F2F7; border: none; border-radius: 10px; padding: 10px; font-size: 16px; width: 100%; outline: none; font-family: inherit; }
-        .time-input { width: 100px; text-align: center; color: var(--ios-blue); font-weight: 600; }
+        .content { padding: 20px; padding-bottom: 140px; }
+        .card { background: var(--ios-card); border-radius: 16px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 18px; }
         
-        .btn-ios-add { background: var(--ios-blue); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .card-label { 
+            font-size: 18px; font-weight: 700; color: var(--ios-text); 
+            margin-bottom: 15px; display: flex; align-items: center; gap: 8px; 
+        }
+
+        .input-group { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; }
+        input, select, textarea { 
+            background: #F2F2F7; border: none; border-radius: 12px; 
+            padding: 14px; font-size: 18px; width: 100%; outline: none; 
+        }
         
-        .list-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid #F2F2F7; font-size: 15px; align-items: center; }
-        .list-item:last-child { border-bottom: none; }
-        .item-time { color: var(--ios-gray); font-size: 13px; font-weight: 600; margin-right: 8px; }
-        .item-del { color: #FF3B30; font-size: 18px; padding-left: 15px; font-weight: bold; }
+        .time-input { width: 120px; text-align: center; color: var(--ios-blue); font-weight: 700; }
+        
+        .btn-ios-add { 
+            background: var(--ios-blue); color: white; border: none; border-radius: 50%; 
+            width: 50px; height: 50px; font-size: 28px; 
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; 
+        }
+        
+        .list-item { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid #F2F2F7; font-size: 18px; align-items: center; }
+        .item-time { color: var(--ios-gray); font-size: 15px; font-weight: 700; margin-right: 12px; background: #eee; padding: 4px 8px; border-radius: 6px; }
+        .item-del { color: #FF3B30; font-size: 22px; padding-left: 20px; font-weight: bold; }
 
-        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; box-sizing: border-box; background: linear-gradient(to top, white 60%, transparent); display: flex; justify-content: center; }
-        .btn-send { background: #111; color: white; border: none; width: 100%; max-width: 400px; height: 50px; border-radius: 14px; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
-
-        .c-blue { color: var(--ios-blue); } .c-green { color: var(--ios-green); } .c-orange { color: var(--ios-orange); } .c-pink { color: var(--ios-pink); }
+        .footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 25px; box-sizing: border-box; background: linear-gradient(to top, white 70%, transparent); display: flex; justify-content: center; }
+        .btn-send { background: #000; color: white; border: none; width: 100%; max-width: 400px; height: 60px; border-radius: 18px; font-size: 19px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 12px; }
     </style>
 </head>
 <body>
@@ -67,9 +76,9 @@
             <input type="date" id="date-input" style="opacity: 0; position: absolute; width:1px;">
         </div>
 
-        <div class="content" id="main-content">
+        <div class="content">
             <div class="card">
-                <div class="card-label"><i class="f7-icons c-blue" style="font-size:14px">drop_fill</i> Formula</div>
+                <div class="card-label"><i class="f7-icons c-blue">drop_fill</i> Formula</div>
                 <div class="input-group">
                     <input type="number" id="f-oz" placeholder="oz">
                     <input type="time" id="f-time" class="time-input">
@@ -79,9 +88,9 @@
             </div>
 
             <div class="card">
-                <div class="card-label"><i class="f7-icons c-green" style="font-size:14px">circle_fill</i> Solid Food</div>
+                <div class="card-label"><i class="f7-icons c-green">circle_fill</i> Solid Food</div>
                 <div class="input-group">
-                    <input type="text" id="s-desc" placeholder="Food desc...">
+                    <input type="text" id="s-desc" placeholder="Food type...">
                     <input type="time" id="s-time" class="time-input">
                     <button class="btn-ios-add" style="background:var(--ios-green)" onclick="saveEntry('solid')">+</button>
                 </div>
@@ -89,9 +98,10 @@
             </div>
 
             <div class="card">
-                <div class="card-label"><i class="f7-icons c-orange" style="font-size:14px">moon_fill</i> Nap</div>
+                <div class="card-label"><i class="f7-icons c-orange">moon_fill</i> Nap</div>
                 <div class="input-group">
                     <input type="time" id="n-start">
+                    <span style="font-weight: 800; font-size: 12px;">TO</span>
                     <input type="time" id="n-end">
                     <button class="btn-ios-add" style="background:var(--ios-orange)" onclick="saveEntry('nap')">+</button>
                 </div>
@@ -99,10 +109,9 @@
             </div>
 
             <div class="card">
-                <div class="card-label"><i class="f7-icons c-pink" style="font-size:14px">layers_fill</i> Diaper (No Time)</div>
+                <div class="card-label"><i class="f7-icons c-pink">layers_fill</i> Diaper</div>
                 <div class="input-group">
                     <select id="d-type">
-                        <option value="Wet 💧">Wet 💧</option>
                         <option value="Soft 💩">Soft 💩</option>
                         <option value="Hard 💩">Hard 💩</option>
                         <option value="Runny 💩">Runny 💩</option>
@@ -114,23 +123,23 @@
 
             <div class="card">
                 <div class="card-label">Daily Notes</div>
-                <textarea id="obs-text" rows="3" placeholder="Any observations..." onchange="saveNotes()"></textarea>
+                <textarea id="obs-text" rows="4" placeholder="Notes..." onchange="saveNotes()"></textarea>
             </div>
         </div>
 
         <div class="footer">
             <button class="btn-send" onclick="handleShare()">
-                <i class="f7-icons">paperplane_fill</i> Send Summary
+                <i class="f7-icons">paperplane_fill</i> SEND SUMMARY
             </button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO FIREBASE (SUBSTITUA PELOS SEUS DADOS) ---
+        // Substitua pelos seus dados do Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            databaseURL: "https://seu-projeto.firebaseio.com",
-            projectId: "seu-projeto",
+            apiKey: "SUA_API_KEY",
+            databaseURL: "SUA_DATABASE_URL",
+            projectId: "SEU_ID",
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
@@ -139,12 +148,10 @@
         const dateIn = document.getElementById('date-input');
         const dateDisp = document.getElementById('date-display');
         
-        // Data Atual Inicial
         const today = new Date().toISOString().split('T')[0];
         dateIn.value = today;
         updateDisplayDate(today);
 
-        // Ao mudar data no calendário
         dateIn.addEventListener('change', (e) => {
             const newDate = e.target.value;
             updateDisplayDate(newDate);
@@ -162,10 +169,8 @@
             const hh = parseInt(h);
             const suffix = hh >= 12 ? 'PM' : 'AM';
             const h12 = hh % 12 || 12;
-            return `${h12}:${m} ${suffix}`;
+            return `${h12}:${m}${suffix}`;
         }
-
-        // --- DATABASE OPERATIONS ---
 
         function loadData(date) {
             db.ref(`logs/${date}`).on('value', (snapshot) => {
@@ -190,7 +195,7 @@
             if(type === 'formula') {
                 const oz = document.getElementById('f-oz').value;
                 const t = document.getElementById('f-time').value;
-                if(!oz || !t) return alert("Missing data");
+                if(!oz || !t) return;
                 entry.display = oz + " oz";
                 entry.timeLabel = formatTime(t);
                 document.getElementById('f-oz').value = "";
@@ -198,7 +203,7 @@
             else if(type === 'solid') {
                 const desc = document.getElementById('s-desc').value;
                 const t = document.getElementById('s-time').value;
-                if(!desc || !t) return alert("Missing data");
+                if(!desc || !t) return;
                 entry.display = desc;
                 entry.timeLabel = formatTime(t);
                 document.getElementById('s-desc').value = "";
@@ -206,7 +211,7 @@
             else if(type === 'nap') {
                 const s = document.getElementById('n-start').value;
                 const e = document.getElementById('n-end').value;
-                if(!s) return alert("Missing start time");
+                if(!s) return;
                 entry.display = `${formatTime(s)} - ${e ? formatTime(e) : '?'}`;
                 entry.timeLabel = "Nap";
             }
@@ -219,15 +224,11 @@
         }
 
         function saveNotes() {
-            const date = dateIn.value;
-            const note = document.getElementById('obs-text').value;
-            db.ref(`logs/${date}/notes`).set(note);
+            db.ref(`logs/${dateIn.value}/notes`).set(document.getElementById('obs-text').value);
         }
 
         function deleteEntry(id) {
-            if(confirm("Delete this entry?")) {
-                db.ref(`logs/${dateIn.value}/${id}`).remove();
-            }
+            if(confirm("Delete?")) db.ref(`logs/${dateIn.value}/${id}`).remove();
         }
 
         function renderLogs() {
@@ -243,37 +244,26 @@
             });
         }
 
-        // --- SHARING ---
-
         function handleShare() {
             let txt = `👶 *Baby Log - ${dateDisp.innerText}*\n`;
-            const sections = [
-                { key: 'formula', label: '🍼 Formula' },
-                { key: 'solid', label: '🍎 Food' },
-                { key: 'nap', label: '💤 Naps' },
-                { key: 'diaper', label: '💩 Diapers' }
-            ];
-
+            const sections = [{key:'formula',l:'🍼 Formula'},{key:'solid',l:'🍎 Food'},{key:'nap',l:'💤 Naps'},{key:'diaper',l:'💩 Diapers'}];
             sections.forEach(sec => {
                 const items = currentLogs.filter(l => l.type === sec.key);
                 if(items.length > 0) {
-                    txt += `\n${sec.label}:\n`;
+                    txt += `\n${sec.l}:\n`;
                     items.forEach(i => txt += `• ${i.timeLabel ? i.timeLabel + ': ' : ''}${i.display}\n`);
                 }
             });
-
             const obs = document.getElementById('obs-text').value;
             if(obs) txt += `\n📝 Notes:\n${obs}`;
 
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            if (isIOS) {
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
                 window.location.href = `sms:?&body=${encodeURIComponent(txt)}`;
             } else {
-                navigator.clipboard.writeText(txt).then(() => alert("Summary copied to clipboard!"));
+                navigator.clipboard.writeText(txt).then(() => alert("Copied!"));
             }
         }
 
-        // Carregar dados iniciais (hoje)
         loadData(today);
     </script>
 </body>
