@@ -198,9 +198,15 @@
             background: white; width: 85%; max-width: 350px; border-radius: 16px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;
         }
         .modal-title { font-weight: 700; font-size: 20px; margin-bottom: 20px; }
+        
         .modal-input {
             width: 100%; padding: 14px; background: #F2F2F7; border: none; border-radius: 10px; margin-bottom: 15px; font-size: 18px; box-sizing: border-box;
         }
+        
+        .modal-label {
+            display: block; text-align: left; font-size: 14px; color: var(--ios-gray); margin-bottom: 5px; margin-left: 5px; font-weight: 600;
+        }
+
         .modal-buttons {
             display: flex; justify-content: space-between; margin-top: 10px; gap: 15px;
         }
@@ -331,8 +337,23 @@
 <div id="edit-modal" class="modal-overlay">
     <div class="modal-card">
         <div class="modal-title">Edit Entry</div>
-        <input type="text" id="edit-val" class="modal-input" placeholder="Value">
-        <input type="time" id="edit-time" class="modal-input">
+        
+        <div id="regular-edit-fields">
+            <span class="modal-label">Value</span>
+            <input type="text" id="edit-val" class="modal-input" placeholder="Value">
+            
+            <span class="modal-label">Time</span>
+            <input type="time" id="edit-time" class="modal-input">
+        </div>
+
+        <div id="nap-edit-fields" style="display:none;">
+            <span class="modal-label">Start Time</span>
+            <input type="time" id="edit-nap-start" class="modal-input">
+            
+            <span class="modal-label">End Time</span>
+            <input type="time" id="edit-nap-end" class="modal-input">
+        </div>
+
         <div class="modal-buttons">
             <button class="modal-btn btn-cancel" onclick="closeEditModal()">Cancel</button>
             <button class="modal-btn btn-save" onclick="saveEdit()">Save</button>
@@ -346,6 +367,7 @@
     let logs = []; 
     let selectedDiaperType = 'Soft';
     let currentEditId = null;
+    let isEditingNap = false;
     
     // DEFINITIVE SORT ORDER
     const categoryOrder = { 
@@ -400,7 +422,6 @@
         const val = document.getElementById('formula-input').value;
         const timeVal = document.getElementById('formula-time').value;
         if(!val) return;
-        // ICON UPDATED TO BOTTLE
         addEntry('Formula', 'Formula', val + ' oz', '🍼', 'var(--ios-blue)', timeVal);
         document.getElementById('formula-input').value = '';
     }
@@ -429,7 +450,8 @@
         const displayVal = `Nap (${durationStr})`;
         const detailVal = `${convertTo12Hour(start)} - ${convertTo12Hour(end)}`;
 
-        addEntry('Nap', displayVal, detailVal, '💤', 'var(--ios-indigo)', start);
+        // Pass End Time explicitly for easier editing later
+        addEntry('Nap', displayVal, detailVal, '💤', 'var(--ios-indigo)', start, end);
     }
 
     function addNote() {
@@ -453,7 +475,7 @@
         addEntry('Diapers', selectedDiaperType, '', '💩', 'var(--ios-orange)', timeString);
     }
 
-    function addEntry(type, value, detail, icon, color, timeStr) {
+    function addEntry(type, value, detail, icon, color, timeStr, endTimeStr = null) {
         const entryDate = new Date(currentDate);
         const [hours, minutes] = timeStr.split(':');
         entryDate.setHours(hours, minutes);
@@ -464,6 +486,7 @@
             sortTime: entryDate.getTime(),
             displayTime: convertTo12Hour(timeStr),
             rawTime: timeStr,
+            rawEndTime: endTimeStr, // Store End Time for Naps
             type, value, detail, icon, color
         };
         logs.push(entry);
@@ -484,8 +507,27 @@
         const entry = logs.find(item => item.id === id);
         if(!entry) return;
         currentEditId = id;
-        document.getElementById('edit-val').value = entry.value;
-        document.getElementById('edit-time').value = entry.rawTime || "12:00";
+        
+        // Check if NAP
+        if (entry.type === 'Nap') {
+            isEditingNap = true;
+            document.getElementById('regular-edit-fields').style.display = 'none';
+            document.getElementById('nap-edit-fields').style.display = 'block';
+            
+            // Populate Nap times
+            document.getElementById('edit-nap-start').value = entry.rawTime || "12:00";
+            // If old data doesn't have rawEndTime, default to 1hr later
+            document.getElementById('edit-nap-end').value = entry.rawEndTime || "13:00";
+            
+        } else {
+            isEditingNap = false;
+            document.getElementById('regular-edit-fields').style.display = 'block';
+            document.getElementById('nap-edit-fields').style.display = 'none';
+            
+            document.getElementById('edit-val').value = entry.value;
+            document.getElementById('edit-time').value = entry.rawTime || "12:00";
+        }
+
         document.getElementById('edit-modal').style.display = 'flex';
     }
 
@@ -496,22 +538,58 @@
 
     function saveEdit() {
         if(!currentEditId) return;
-        const newVal = document.getElementById('edit-val').value;
-        const newTime = document.getElementById('edit-time').value;
+        
         const index = logs.findIndex(l => l.id === currentEditId);
-        if(index !== -1 && newVal && newTime) {
-            logs[index].value = newVal;
-            logs[index].rawTime = newTime;
-            logs[index].displayTime = convertTo12Hour(newTime);
+        if(index === -1) return;
+
+        if (isEditingNap) {
+            // HANDLE NAP SAVE
+            const newStart = document.getElementById('edit-nap-start').value;
+            const newEnd = document.getElementById('edit-nap-end').value;
             
-            const [hours, minutes] = newTime.split(':');
-            const newDate = new Date(logs[index].sortTime); 
-            newDate.setHours(hours, minutes);
-            logs[index].sortTime = newDate.getTime();
+            if (newStart && newEnd) {
+                // Recalculate everything
+                const d1 = new Date("2000-01-01 " + newStart);
+                const d2 = new Date("2000-01-01 " + newEnd);
+                let diffMs = d2 - d1;
+                if(diffMs < 0) diffMs += 24*60*60*1000;
+                const diffHrs = Math.floor(diffMs / 3600000);
+                const diffMins = Math.round(((diffMs % 3600000) / 60000));
+                
+                const durationStr = (diffHrs > 0 ? diffHrs + 'h ' : '') + diffMins + 'm';
+                
+                logs[index].value = `Nap (${durationStr})`;
+                logs[index].detail = `${convertTo12Hour(newStart)} - ${convertTo12Hour(newEnd)}`;
+                logs[index].rawTime = newStart;
+                logs[index].rawEndTime = newEnd;
+                logs[index].displayTime = convertTo12Hour(newStart);
+                
+                // Sort Update
+                const [hours, minutes] = newStart.split(':');
+                const newDate = new Date(logs[index].sortTime); 
+                newDate.setHours(hours, minutes);
+                logs[index].sortTime = newDate.getTime();
+            }
             
-            saveData();
-            renderLogs();
+        } else {
+            // HANDLE REGULAR SAVE
+            const newVal = document.getElementById('edit-val').value;
+            const newTime = document.getElementById('edit-time').value;
+            
+            if (newVal && newTime) {
+                logs[index].value = newVal;
+                logs[index].rawTime = newTime;
+                logs[index].displayTime = convertTo12Hour(newTime);
+                
+                const [hours, minutes] = newTime.split(':');
+                const newDate = new Date(logs[index].sortTime); 
+                newDate.setHours(hours, minutes);
+                logs[index].sortTime = newDate.getTime();
+            }
         }
+        
+        saveData();
+        renderLogs();
         closeEditModal();
     }
     
