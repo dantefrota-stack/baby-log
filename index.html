@@ -229,7 +229,7 @@
             <div class="list-header">Formula</div>
             <div class="card">
                 <div class="list-item">
-                    <div class="icon-box blue-icon">💧</div>
+                    <div class="icon-box blue-icon">🍼</div>
                     <div class="input-row">
                         <input type="number" id="formula-input" placeholder="oz">
                         <div class="time-wrapper">
@@ -400,7 +400,8 @@
         const val = document.getElementById('formula-input').value;
         const timeVal = document.getElementById('formula-time').value;
         if(!val) return;
-        addEntry('Formula', 'Formula', val + ' oz', '💧', 'var(--ios-blue)', timeVal);
+        // ICON UPDATED TO BOTTLE
+        addEntry('Formula', 'Formula', val + ' oz', '🍼', 'var(--ios-blue)', timeVal);
         document.getElementById('formula-input').value = '';
     }
 
@@ -608,7 +609,7 @@
                 report += `🍼 [${time}] Formula: ${log.detail}\n`;
             } 
             else if (log.type === 'Food') {
-                report += `🍎 [${time}] Food: ${val}\n`;
+                report += `🍽️ [${time}] Food: ${val}\n`;
             }
             else if (log.type === 'Nap') {
                 report += `💤 Nap: ${log.detail}\n`; 
