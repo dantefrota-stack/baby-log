@@ -256,9 +256,6 @@
                     <div class="icon-box green-icon">🍽️</div>
                     <div class="input-row">
                         <input type="text" id="food-input" placeholder="Ex: Apple">
-                        <div class="time-wrapper">
-                            <input type="time" id="food-time">
-                        </div>
                         <button class="add-btn" onclick="addFood()">
                             <div class="add-circle" style="background-color: var(--ios-green);">+</div>
                         </button>
@@ -271,7 +268,7 @@
             <div class="list-header">Nap Time</div>
             <div class="card">
                 <div class="list-item">
-                    <div class="icon-box indigo-icon">💤</div>
+                    <div class="icon-box indigo-icon">🛏️</div>
                     <div class="input-row" style="justify-content: flex-start;">
                         <div class="time-wrapper">
                             <input type="time" id="nap-start">
@@ -369,7 +366,6 @@
     let currentEditId = null;
     let isEditingNap = false;
     
-    // DEFINITIVE SORT ORDER
     const categoryOrder = { 
         'Formula': 1, 
         'Food': 2, 
@@ -389,7 +385,7 @@
         const now = new Date();
         const timeString = now.toTimeString().substring(0, 5);
         document.getElementById('formula-time').value = timeString;
-        document.getElementById('food-time').value = timeString;
+        // Food time removed
         document.getElementById('nap-start').value = timeString;
         const later = new Date(now.getTime() + 60*60000);
         document.getElementById('nap-end').value = later.toTimeString().substring(0, 5);
@@ -428,9 +424,11 @@
 
     function addFood() {
         const val = document.getElementById('food-input').value;
-        const timeVal = document.getElementById('food-time').value;
+        // System time for sorting only
+        const now = new Date();
+        const timeString = now.toTimeString().substring(0, 5);
         if(!val) return;
-        addEntry('Food', val, '', '🍽️', 'var(--ios-green)', timeVal);
+        addEntry('Food', val, '', '🍽️', 'var(--ios-green)', timeString);
         document.getElementById('food-input').value = '';
     }
 
@@ -450,8 +448,7 @@
         const displayVal = `Nap (${durationStr})`;
         const detailVal = `${convertTo12Hour(start)} - ${convertTo12Hour(end)}`;
 
-        // Pass End Time explicitly for easier editing later
-        addEntry('Nap', displayVal, detailVal, '💤', 'var(--ios-indigo)', start, end);
+        addEntry('Nap', displayVal, detailVal, '🛏️', 'var(--ios-indigo)', start, end);
     }
 
     function addNote() {
@@ -486,7 +483,7 @@
             sortTime: entryDate.getTime(),
             displayTime: convertTo12Hour(timeStr),
             rawTime: timeStr,
-            rawEndTime: endTimeStr, // Store End Time for Naps
+            rawEndTime: endTimeStr, 
             type, value, detail, icon, color
         };
         logs.push(entry);
@@ -514,9 +511,7 @@
             document.getElementById('regular-edit-fields').style.display = 'none';
             document.getElementById('nap-edit-fields').style.display = 'block';
             
-            // Populate Nap times
             document.getElementById('edit-nap-start').value = entry.rawTime || "12:00";
-            // If old data doesn't have rawEndTime, default to 1hr later
             document.getElementById('edit-nap-end').value = entry.rawEndTime || "13:00";
             
         } else {
@@ -543,12 +538,10 @@
         if(index === -1) return;
 
         if (isEditingNap) {
-            // HANDLE NAP SAVE
             const newStart = document.getElementById('edit-nap-start').value;
             const newEnd = document.getElementById('edit-nap-end').value;
             
             if (newStart && newEnd) {
-                // Recalculate everything
                 const d1 = new Date("2000-01-01 " + newStart);
                 const d2 = new Date("2000-01-01 " + newEnd);
                 let diffMs = d2 - d1;
@@ -564,7 +557,6 @@
                 logs[index].rawEndTime = newEnd;
                 logs[index].displayTime = convertTo12Hour(newStart);
                 
-                // Sort Update
                 const [hours, minutes] = newStart.split(':');
                 const newDate = new Date(logs[index].sortTime); 
                 newDate.setHours(hours, minutes);
@@ -572,7 +564,6 @@
             }
             
         } else {
-            // HANDLE REGULAR SAVE
             const newVal = document.getElementById('edit-val').value;
             const newTime = document.getElementById('edit-time').value;
             
@@ -612,16 +603,15 @@
         return `${h}:${minutes} ${ampm}`;
     }
 
-    // --- SORTING LOGIC: CATEGORY -> TIME ---
     function sortLogs(items) {
         return items.sort((a, b) => {
             const orderA = categoryOrder[a.type] || 99;
             const orderB = categoryOrder[b.type] || 99;
             
             if (orderA !== orderB) {
-                return orderA - orderB; // Group Priority
+                return orderA - orderB; 
             } else {
-                return a.sortTime - b.sortTime; // Chronological inside group
+                return a.sortTime - b.sortTime; 
             }
         });
     }
@@ -629,8 +619,6 @@
     function renderLogs() {
         const list = document.getElementById('log-list');
         let dayLogs = logs.filter(l => l.dateStr === currentDate.toDateString());
-        
-        // SORT FOR DISPLAY ON SCREEN
         dayLogs = sortLogs(dayLogs);
 
         if(dayLogs.length === 0) {
@@ -643,7 +631,8 @@
             const displayTime = log.displayTime ? log.displayTime : '--:--';
             let displayValue = log.value.replace(/💩|💧/g, '').trim(); 
             
-            const showTime = (log.type !== 'Diapers' && log.type !== 'Note');
+            // Hide time for Food, Diapers AND Notes
+            const showTime = (log.type !== 'Diapers' && log.type !== 'Note' && log.type !== 'Food');
 
             html += `
             <div class="log-entry">
@@ -661,7 +650,6 @@
         list.innerHTML = html;
     }
 
-    // --- REPORT GENERATION ---
     function generateReport() {
         let dayLogs = logs.filter(l => l.dateStr === currentDate.toDateString());
         
@@ -670,7 +658,6 @@
             return;
         }
 
-        // SORT FOR REPORT
         dayLogs = sortLogs(dayLogs);
 
         const dateStr = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
@@ -684,19 +671,20 @@
             let val = log.value.replace(/💩|💧/g, '').trim();
             
             if (log.type === 'Formula') {
-                report += `🍼 [${time}] Formula: ${log.detail}\n`;
+                report += `🍼 [${time}] ${log.detail}\n`;
             } 
             else if (log.type === 'Food') {
-                report += `🍽️ [${time}] Food: ${val}\n`;
+                report += `🍽️ ${val}\n`; // No Time
             }
             else if (log.type === 'Nap') {
-                report += `💤 Nap: ${log.detail}\n`; 
+                const durationOnly = val.replace("Nap ", "");
+                report += `🛏️ ${log.detail} ${durationOnly}\n`; 
             }
             else if (log.type === 'Diapers') {
-                report += `💩 Diaper: ${val}\n`;
+                report += `💩 ${val}\n`;
             }
             else if (log.type === 'Note') {
-                report += `📝 Note: ${val}\n`;
+                report += `📝 ${val}\n`;
             }
         });
         
