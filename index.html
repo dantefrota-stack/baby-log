@@ -8,7 +8,7 @@
         :root {
             --ios-bg: #F2F2F7;
             --ios-card: #FFFFFF;
-            --ios-blue: #007AFF;
+            --ios-blue: #007AFF; /* Cor Padrão dos Botões */
             --ios-green: #34C759;
             --ios-orange: #FF9500;
             --ios-purple: #5856D6;
@@ -136,6 +136,7 @@
         
         .add-circle {
             width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 24px; line-height: 30px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            /* Background color set inline in HTML to Blue now */
         }
 
         /* Diaper Control */
@@ -257,7 +258,7 @@
                     <div class="input-row">
                         <input type="text" id="food-input" placeholder="Ex: Apple">
                         <button class="add-btn" onclick="addFood()">
-                            <div class="add-circle" style="background-color: var(--ios-green);">+</div>
+                            <div class="add-circle" style="background-color: var(--ios-blue);">+</div>
                         </button>
                     </div>
                 </div>
@@ -278,7 +279,7 @@
                             <input type="time" id="nap-end">
                         </div>
                         <button class="add-btn" style="margin-left: auto;" onclick="addNap()">
-                            <div class="add-circle" style="background-color: var(--ios-indigo);">+</div>
+                            <div class="add-circle" style="background-color: var(--ios-blue);">+</div>
                         </button>
                     </div>
                 </div>
@@ -307,7 +308,7 @@
                     <div class="input-row">
                         <input type="text" id="note-input" placeholder="Ex: Bath, Meds">
                         <button class="add-btn" onclick="addNote()">
-                            <div class="add-circle" style="background-color: var(--ios-purple);">+</div>
+                            <div class="add-circle" style="background-color: var(--ios-blue);">+</div>
                         </button>
                     </div>
                 </div>
@@ -366,6 +367,7 @@
     let currentEditId = null;
     let isEditingNap = false;
     
+    // DEFINITIVE SORT ORDER
     const categoryOrder = { 
         'Formula': 1, 
         'Food': 2, 
@@ -385,7 +387,6 @@
         const now = new Date();
         const timeString = now.toTimeString().substring(0, 5);
         document.getElementById('formula-time').value = timeString;
-        // Food time removed
         document.getElementById('nap-start').value = timeString;
         const later = new Date(now.getTime() + 60*60000);
         document.getElementById('nap-end').value = later.toTimeString().substring(0, 5);
@@ -424,7 +425,6 @@
 
     function addFood() {
         const val = document.getElementById('food-input').value;
-        // System time for sorting only
         const now = new Date();
         const timeString = now.toTimeString().substring(0, 5);
         if(!val) return;
@@ -650,6 +650,7 @@
         list.innerHTML = html;
     }
 
+    // --- REPORT GENERATION (CLEAN LAYOUT) ---
     function generateReport() {
         let dayLogs = logs.filter(l => l.dateStr === currentDate.toDateString());
         
@@ -671,14 +672,17 @@
             let val = log.value.replace(/💩|💧/g, '').trim();
             
             if (log.type === 'Formula') {
-                report += `🍼 [${time}] ${log.detail}\n`;
+                // Format: Icon Quantity [Time]
+                report += `🍼 ${log.detail} [${time}]\n`;
             } 
             else if (log.type === 'Food') {
-                report += `🍽️ ${val}\n`; // No Time
+                // Format: Icon Quantity (No time)
+                report += `🍽️ ${val}\n`; 
             }
             else if (log.type === 'Nap') {
+                // Format: Icon Duration \n [Start - End]
                 const durationOnly = val.replace("Nap ", "");
-                report += `🛏️ ${log.detail} ${durationOnly}\n`; 
+                report += `🛏️ ${durationOnly}\n   [${log.detail}]\n`; 
             }
             else if (log.type === 'Diapers') {
                 report += `💩 ${val}\n`;
