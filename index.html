@@ -228,6 +228,10 @@
         .share-btn {
             width: 100%; background-color: #000; color: white; padding: 18px; border-radius: 14px; border: none; font-size: 19px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
+        .share-row { display: flex; gap: 10px; }
+        .share-row .share-btn { width: auto; flex: 1; justify-content: center; }
+        .whatsapp-btn { background-color: var(--ios-green); }
+
         
         .reset-link {
             text-align: center; color: var(--ios-red); font-size: 15px; font-weight: 500; text-decoration: none; margin-top: 5px; cursor: pointer; padding: 10px;
@@ -395,9 +399,14 @@
 </div>
 
 <div class="bottom-action">
-    <button class="share-btn" onclick="generateReport()">
-        <span>💬</span> Send Text Report
-    </button>
+    <div class="share-row">
+        <button class="share-btn" onclick="sendTextReport()">
+            <span>💬</span> Text
+        </button>
+        <button class="share-btn whatsapp-btn" onclick="sendWhatsAppReport()">
+            <span>🟢</span> WhatsApp
+        </button>
+    </div>
     <div class="reset-link" onclick="clearDayData()">Clear Only Today's Log</div>
     <div class="data-link" onclick="openDataModal()">Backup / Restore Data</div>
 </div>
@@ -426,7 +435,7 @@
         <div class="modal-title">Edit Entry</div>
         
         <div id="regular-edit-fields">
-            <span class="modal-label">Value</span>
+            <span id="edit-val-label" class="modal-label">Value</span>
             <input type="text" id="edit-val" class="modal-input" placeholder="Value">
             
             <span class="modal-label">Time</span>
@@ -678,8 +687,31 @@
             isEditingNap = false;
             document.getElementById('regular-edit-fields').style.display = 'block';
             document.getElementById('nap-edit-fields').style.display = 'none';
-            
-            document.getElementById('edit-val').value = entry.value;
+
+            const editVal = document.getElementById('edit-val');
+            const editValLabel = document.getElementById('edit-val-label');
+
+            // Formula: edit Quantity (oz) + Time (instead of the title)
+            if (entry.type === 'Formula') {
+                editVal.type = 'number';
+                editVal.inputMode = 'decimal';
+                editVal.step = '0.5';
+                editVal.placeholder = 'oz';
+
+                const qtyMatch = String(entry.detail || '').match(/[\d.]+/);
+                editVal.value = qtyMatch ? qtyMatch[0] : '';
+
+                if (editValLabel) editValLabel.textContent = 'Quantity (oz)';
+            } else {
+                editVal.type = 'text';
+                editVal.inputMode = 'text';
+                editVal.removeAttribute('step');
+                editVal.placeholder = 'Value';
+                editVal.value = entry.value;
+
+                if (editValLabel) editValLabel.textContent = 'Value';
+            }
+
             document.getElementById('edit-time').value = entry.rawTime || "12:00";
         }
 
@@ -726,20 +758,35 @@
         } else {
             const newVal = document.getElementById('edit-val').value;
             const newTime = document.getElementById('edit-time').value;
-            
-            if (newVal && newTime) {
-                logs[index].value = newVal;
+
+            // Allow "0" (number input) but block empty strings
+            if (newVal !== "" && newTime) {
+
+                // Formula: edit quantity (detail) + time (keep title as "Formula")
+                if (logs[index].type === 'Formula') {
+                    const qtyMatch = String(newVal).trim().match(/[\d.]+/);
+                    if (!qtyMatch) {
+                        alert("Please enter the formula quantity in oz.");
+                        return;
+                    }
+                    logs[index].value = 'Formula';
+                    logs[index].detail = `${qtyMatch[0]} oz`;
+                } else {
+                    logs[index].value = newVal;
+                }
+
                 logs[index].rawTime = newTime;
                 logs[index].displayTime = convertTo12Hour(newTime);
-                
+
                 const [hours, minutes] = newTime.split(':');
                 const newDate = new Date(logs[index].sortTime); 
                 newDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
                 logs[index].sortTime = newDate.getTime();
             }
         }
-        
-        saveData();
+
+
+saveData();
         renderLogs();
         closeEditModal();
     }
@@ -819,26 +866,26 @@
     }
 
     // --- REPORT GENERATION (CLEAN LAYOUT) ---
-    function generateReport() {
+    function buildReportText() {
         let dayLogs = logs.filter(l => l.dateStr === currentDate.toDateString());
-        
+
         if(dayLogs.length === 0) {
             alert("No logs available to report for this day.");
-            return;
+            return null;
         }
 
         dayLogs = sortLogs(dayLogs);
 
         const dateStr = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        
+
         let report = `DAILY BABY LOG REPORT\n`;
         report += `Date: ${dateStr}\n`;
         report += `----------------------------\n\n`;
-        
+
         dayLogs.forEach(log => {
             const time = log.displayTime || '--:--';
             let val = log.value.replace(/💩|💧/g, '').trim();
-            
+
             if (log.type === 'Formula') {
                 // Format: Icon Quantity [Time]
                 report += `🍼 ${log.detail} [${time}]\n`;
@@ -859,13 +906,23 @@
                 report += `📝 ${val}\n`;
             }
         });
-        
-        report += `\n----------------------------\n`;
 
-        // Clipboard (works on HTTPS; ignore errors to avoid breaking SMS/share flow)
+        report += `\n----------------------------\n`;
+        return report;
+    }
+
+    function tryCopyReport(report) {
+        // Clipboard works on HTTPS; ignore errors so it never breaks share flow
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(report).catch(() => {});
         }
+    }
+
+    function sendTextReport() {
+        const report = buildReportText();
+        if (!report) return;
+
+        tryCopyReport(report);
 
         const ua = navigator.userAgent.toLowerCase();
         const encodedReport = encodeURIComponent(report);
@@ -883,7 +940,42 @@
         window.location.href = smsLink;
     }
 
-    
+    function sendWhatsAppReport() {
+        const report = buildReportText();
+        if (!report) return;
+
+        tryCopyReport(report);
+
+        const encodedReport = encodeURIComponent(report);
+        const ua = navigator.userAgent.toLowerCase();
+
+        // Mobile: prefer deep link to WhatsApp app
+        if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1 || ua.indexOf("android") > -1) {
+            const deepLink = `whatsapp://send?text=${encodedReport}`;
+            window.location.href = deepLink;
+
+            // If WhatsApp isn't installed, user stays on page; provide web fallback
+            setTimeout(() => {
+                if (!document.hidden) {
+                    const webLink = `https://wa.me/?text=${encodedReport}`;
+                    window.open(webLink, '_blank');
+                }
+            }, 1200);
+
+            return;
+        }
+
+        // Desktop: WhatsApp Web
+        const webLink = `https://wa.me/?text=${encodedReport}`;
+        window.open(webLink, '_blank');
+    }
+
+    // Backward compatibility (older button/action)
+    function generateReport() {
+        sendTextReport();
+    }
+
+
     // --- BACKUP / RESTORE (for moving data between iPhone/Android/PC) ---
     function openDataModal() {
         document.getElementById('data-modal').style.display = 'flex';
