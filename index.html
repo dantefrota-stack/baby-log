@@ -528,48 +528,43 @@
     }
 
     function loadName() {
-        // Fast local render first
+        // Keep original local behavior first
         const storedName = localStorage.getItem('babyName');
-        if (storedName && storedName.trim()) {
-            babyName = storedName.trim();
-        }
-        document.getElementById('baby-name-display').innerText = (babyName || "BABY").toUpperCase();
+        if (storedName) babyName = storedName;
+        document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
 
-        // Cloud-synced name (shared across all devices)
+        // NEW (requested): sync name via Firebase so it's the same on all devices
         if (!isFirebaseReady) return;
 
-        // Keep one listener
-        if (window.__babyNameRef) return;
+        // Store inside baby_logs so it works even if your rules only allow baby_logs
+        const nameRef = db.ref('baby_logs/__settings/babyName');
 
-        window.__babyNameRef = db.ref('settings/babyName');
-        window.__babyNameRef.on('value', (snap) => {
+        // Listen once and keep synced
+        nameRef.on('value', (snap) => {
             const cloudName = snap.val();
-            if (typeof cloudName === 'string' && cloudName.trim()) {
+            if (cloudName && typeof cloudName === 'string' && cloudName.trim() !== '') {
                 babyName = cloudName.trim();
                 localStorage.setItem('babyName', babyName);
                 document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
             } else {
-                // If cloud is empty but local has a value, seed cloud once
+                // Seed cloud from local if cloud is empty
                 const local = localStorage.getItem('babyName');
-                if (local && local.trim()) {
-                    window.__babyNameRef.set(local.trim());
-                }
+                if (local && local.trim() !== '') nameRef.set(local.trim());
             }
-        }, (err) => {
-            console.error("Name sync error:", err);
         });
     }
 
     function editName() {
+        // Keep original prompt UX
         let newName = prompt("Enter Baby's Name:", babyName);
         if (newName && newName.trim() !== "") {
             babyName = newName.trim();
             localStorage.setItem('babyName', babyName);
             document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
 
-            // Push to cloud so every device updates
+            // NEW (requested): push to cloud so every device updates
             if (isFirebaseReady) {
-                db.ref('settings/babyName').set(babyName).catch(err => console.error("Failed to save name:", err));
+                db.ref('baby_logs/__settings/babyName').set(babyName);
             }
         }
     }
@@ -580,9 +575,11 @@
         const val = document.getElementById('formula-input').value;
         const timeVal = document.getElementById('formula-time').value;
         if(!val) return;
+        addEntry('Formula', 'Formula', val + ' oz', '🍼', 'var(--ios-blue)', timeVal);
+        document.getElementById('formula-input').value = '';
+    }
 
-        // Keep UI identical, but store value as quantity to allow proper edit on all devices
-        addEntry('Formula', `${val} oz`, '', '🍼', 'var(--ios-blue)', timeVal);
+oz`, '', '🍼', 'var(--ios-blue)', timeVal);
         document.getElementById('formula-input').value = '';
     }
 
@@ -834,7 +831,8 @@
 
         let report = `${babyName.toUpperCase()}'S DAILY REPORT\n`;
         report += `${dateStr}
-
+`;
+        report += `
 `;
         dayLogs.forEach(log => {
             const time = log.displayTime || '--:--';
@@ -857,7 +855,6 @@
                 report += `📝 ${val}\n`;
             }
         });
-
         navigator.clipboard.writeText(report).catch(err => console.log('Copy failed', err));
 
         const encodedReport = encodeURIComponent(report);
