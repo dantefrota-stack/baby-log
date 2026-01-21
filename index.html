@@ -62,10 +62,6 @@
             gap: 5px;
         }
 
-        #connection-status {
-            font-size: 11px; color: #8E8E93; margin-top: 4px; font-weight: 500;
-        }
-
         /* Header */
         header {
             background-color: rgba(242, 242, 247, 0.98);
@@ -105,47 +101,49 @@
         }
 
         /* Lists & Cards */
-        .list-group { margin: 20px 16px; }
+        .list-group { margin: 24px 16px; }
         .list-header {
-            text-transform: uppercase; font-size: 14px; font-weight: 700;
-            color: var(--ios-dark-gray); margin-bottom: 8px; margin-left: 16px; letter-spacing: 0.5px;
+            text-transform: uppercase; font-size: 15px; font-weight: 700;
+            color: var(--ios-dark-gray); margin-bottom: 10px; margin-left: 16px; letter-spacing: 0.5px;
         }
         .card {
             background-color: var(--ios-card); border-radius: 12px;
             overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .list-item {
-            display: flex; align-items: center; padding: 12px 16px;
-            border-bottom: 0.5px solid var(--ios-separator); 
+            display: flex; align-items: center; padding: 16px;
+            border-bottom: 0.5px solid var(--ios-separator); padding-right: 12px; 
         }
         .list-item:last-child { border-bottom: none; }
         .icon-box { 
-            width: 30px; font-size: 26px; margin-right: 12px; text-align: center; flex-shrink: 0; 
+            width: 34px; font-size: 28px; margin-right: 14px; text-align: center; flex-shrink: 0; margin-top: 2px;
         }
 
         /* Inputs */
         .input-row { 
-            display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; 
+            display: flex; flex: 1; justify-content: space-between; align-items: center; gap: 8px; min-width: 0; 
         }
         
         input[type="text"], input[type="number"] {
-            border: none; font-size: 18px; font-weight: 500; flex: 1; outline: none; padding: 5px 0; 
-            min-width: 40px; background: transparent; color: #000;
+            border: none; font-size: 20px; font-weight: 500; flex: 1; outline: none; padding: 5px 0; min-width: 50px; background: transparent; color: #000;
         }
         ::placeholder { color: #C7C7CC; font-weight: 400; }
 
         .time-wrapper {
-            background-color: #E5E5EA; border-radius: 8px; padding: 6px 4px; display: flex; align-items: center; 
-            flex-shrink: 1; min-width: 85px; justify-content: center;
+            background-color: #E5E5EA; 
+            border-radius: 8px; 
+            padding: 6px 4px; 
+            display: flex; 
+            align-items: center; 
         }
         
         input[type="time"] {
-            border: none; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: var(--ios-blue); outline: none; cursor: pointer;
-            width: 100%; text-align: center;
+            border: none; background: transparent; font-family: inherit; font-size: 16px; font-weight: 600; color: var(--ios-blue); outline: none; cursor: pointer;
+            width: 100%;
         }
 
         .add-btn {
-            background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; margin-left: 4px;
+            background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; margin-left: 5px;
         }
         .add-circle {
             width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 24px; line-height: 30px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -153,38 +151,38 @@
 
         /* Diaper Control */
         .segmented-control {
-            display: flex; background-color: #E5E5EA; padding: 3px; border-radius: 10px; width: 100%; margin-bottom: 12px; height: 40px;
+            display: flex; background-color: #E5E5EA; padding: 3px; border-radius: 10px; width: 100%; margin-bottom: 14px; height: 44px;
         }
         .segment-opt {
-            flex: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; cursor: pointer; border-radius: 8px;
+            flex: 1; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 8px;
         }
         .segment-opt.active { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .full-btn {
-            width: 100%; padding: 12px; background-color: rgba(255, 149, 0, 0.15); color: var(--ios-orange); border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px; background-color: rgba(255, 149, 0, 0.15); color: var(--ios-orange); border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
         /* LOGS */
-        .log-entry { display: flex; align-items: flex-start; padding: 14px 16px; border-bottom: 0.5px solid var(--ios-separator); }
+        .log-entry { display: flex; align-items: flex-start; padding: 16px; border-bottom: 0.5px solid var(--ios-separator); }
         .log-content { flex: 1; display: flex; flex-direction: column; padding-right: 10px; min-width: 0; }
         .log-title { 
-            font-size: 18px; font-weight: 600; white-space: normal; word-wrap: break-word; line-height: 1.3; margin-bottom: 2px;
+            font-size: 19px; font-weight: 600; white-space: normal; word-wrap: break-word; line-height: 1.4; margin-bottom: 4px;
         }
-        .log-sub { font-size: 14px; color: var(--ios-gray); }
-        .log-time { font-size: 14px; font-weight: 500; color: var(--ios-gray); margin-right: 10px; white-space: nowrap; margin-top: 3px; }
-        .action-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 4px 6px; opacity: 0.7; margin-top: -2px; }
-        .edit-btn { color: var(--ios-blue); margin-right: 2px; }
+        .log-sub { font-size: 15px; color: var(--ios-gray); }
+        .log-time { font-size: 15px; font-weight: 500; color: var(--ios-gray); margin-right: 12px; white-space: nowrap; margin-top: 4px; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 22px; padding: 4px 8px; opacity: 0.7; margin-top: -2px; }
+        .edit-btn { color: var(--ios-blue); margin-right: 5px; }
         .delete-btn { color: var(--ios-red); }
 
         /* Bottom Action */
         .bottom-action {
-            position: fixed; bottom: 0; width: 100%; max-width: 450px; padding: 16px;
+            position: fixed; bottom: 0; width: 100%; max-width: 450px; padding: 20px;
             background: rgba(242, 242, 247, 0.98); backdrop-filter: blur(10px);
             box-sizing: border-box; border-top: 1px solid rgba(0,0,0,0.1);
             display: flex; flex-direction: column; gap: 10px;
         }
         .share-row { display: flex; gap: 10px; width: 100%; }
         .share-btn {
-            flex: 1; padding: 14px; border-radius: 12px; border: none; font-size: 17px; font-weight: 700; cursor: pointer;
+            flex: 1; padding: 16px; border-radius: 14px; border: none; font-size: 17px; font-weight: 700; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15); color: white;
         }
@@ -192,10 +190,10 @@
         .btn-whatsapp { background-color: #25D366; }
         
         .reset-link {
-            text-align: center; color: var(--ios-red); font-size: 14px; font-weight: 500; text-decoration: none; margin-top: 5px; cursor: pointer; padding: 10px;
+            text-align: center; color: var(--ios-red); font-size: 15px; font-weight: 500; text-decoration: none; margin-top: 5px; cursor: pointer; padding: 10px;
         }
         
-        .empty-state { text-align: center; color: var(--ios-gray); padding: 40px 20px; font-style: italic; font-size: 16px; }
+        .empty-state { text-align: center; color: var(--ios-gray); padding: 40px 20px; font-style: italic; font-size: 17px; }
         .blue-icon { color: var(--ios-blue); }
         .green-icon { color: var(--ios-green); }
         .purple-icon { color: var(--ios-purple); }
@@ -212,6 +210,8 @@
         .btn-cancel { background: #E5E5EA; color: #000; }
         .btn-save { background: var(--ios-blue); color: #fff; }
 
+        #connection-status { font-size: 12px; color: #8E8E93; margin-top: 5px; }
+
     </style>
 </head>
 <body>
@@ -223,7 +223,7 @@
             <span id="baby-name-display">BABY</span> 
             <span style="font-size:12px; color: #8E8E93;">✏️</span>
         </div>
-        <div id="connection-status">Connecting...</div>
+        <div id="connection-status">Connecting to Cloud...</div>
     </div>
 
     <header>
@@ -278,7 +278,7 @@
                         <div class="time-wrapper" style="flex: 1;">
                             <input type="time" id="nap-start">
                         </div>
-                        <span style="margin: 0 4px; font-weight:600; color: #8E8E93; font-size: 14px;">to</span>
+                        <span style="margin: 0 5px; font-weight:600; color: #8E8E93;">to</span>
                         <div class="time-wrapper" style="flex: 1;">
                             <input type="time" id="nap-end">
                         </div>
@@ -292,7 +292,7 @@
 
         <div class="list-group">
             <div class="list-header">Diapers</div>
-            <div class="card" style="padding: 12px;">
+            <div class="card" style="padding: 16px;">
                 <div class="segmented-control">
                     <div class="segment-opt active" onclick="selectDiaper('Soft', this)">Soft</div>
                     <div class="segment-opt" onclick="selectDiaper('Hard', this)">Hard</div>
@@ -323,7 +323,7 @@
     <div class="list-group">
         <div class="list-header">Daily Log</div>
         <div class="card" id="log-list">
-            <div class="empty-state">Loading...</div>
+            <div class="empty-state">No entries yet.</div>
         </div>
     </div>
 
@@ -363,15 +363,13 @@
     </div>
 </div>
 
-
 <script>
     // --- FIREBASE CONFIGURATION ---
-    // NOTE: For Realtime Database, databaseURL is required for reliable cross-device sync (GitHub Pages, iOS, Android, PC).
+    // Added databaseURL for RTDB cross-device realtime sync (GitHub Pages / iOS / Android / PC)
     const firebaseConfig = {
         apiKey: "AIzaSyDiqYfep_8Myjo1oJ688hLx1UT2O1gzWyM",
         authDomain: "babylogapp-cb457.firebaseapp.com",
         projectId: "babylogapp-cb457",
-        // If your RTDB instance name is different, adjust this URL in Firebase Console > Realtime Database > Data > URL.
         databaseURL: "https://babylogapp-cb457-default-rtdb.firebaseio.com",
         storageBucket: "babylogapp-cb457.firebasestorage.app",
         messagingSenderId: "436304963218",
@@ -382,22 +380,22 @@
     let db;
     let isFirebaseReady = false;
 
-    // Live connection indicator (Realtime Database)
-    function setStatus(text) {
+    function setStatus(txt) {
         const el = document.getElementById('connection-status');
-        if (el) el.innerText = text;
+        if (el) el.innerText = txt;
     }
 
     try {
-        if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
+        if (firebase.apps.length === 0) {
+            firebase.initializeApp(firebaseConfig);
+        }
         db = firebase.database();
         isFirebaseReady = true;
-        setStatus("Cloud Active ✅");
+        setStatus("Cloud Connected ✅");
 
-        // Show true realtime connectivity (connected/disconnected)
+        // Real connection state (online/offline)
         db.ref(".info/connected").on("value", (snap) => {
-            if (snap.val() === true) setStatus("Online ✅");
-            else setStatus("Offline ⚠️");
+            setStatus(snap.val() ? "Online ✅" : "Offline ⚠️");
         });
     } catch (e) {
         console.error("Firebase Error", e);
@@ -406,8 +404,7 @@
 
     // State
     let currentDate = new Date();
-    let logsMap = {};          // id -> entry (keeps IDs stable for edit/delete)
-    let logs = [];             // derived array (sorted)
+    let logs = [];
     let selectedDiaperType = 'Soft';
     let currentEditId = null;
     let isEditingNap = false;
@@ -415,136 +412,90 @@
 
     const categoryOrder = { 'Formula': 1, 'Food': 2, 'Nap': 3, 'Diapers': 4, 'Note': 5 };
 
-    // Keep track of current listener ref so we can detach correctly when switching dates
-    let currentLogsRef = null;
+    // Keep current listener reference so changing dates doesn't leave listeners running
+    let currentDbRef = null;
 
-    window.onload = function () {
+    window.onload = function() {
         loadName();
         updateDateDisplay();
         setDefaultTimes();
         listenToData();
     };
 
-    // --- TIMEZONE SAFE: LOCAL DATE KEY GENERATOR (YYYY-MM-DD) ---
+    // --- Date key (local) to avoid timezone bugs across devices
     function getLocalDateKey(dateObj) {
-        const year = dateObj.getFullYear();
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
     }
 
-    // Build a timestamp for sorting based on the SELECTED DAY (not "today")
-    function buildSortTimeForSelectedDay(timeStr) {
-        const [hh, mm] = (timeStr || "00:00").split(":").map(x => parseInt(x, 10));
-        const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), hh || 0, mm || 0, 0, 0);
-        return d.getTime();
+    function refForCurrentDate() {
+        const dateKey = getLocalDateKey(currentDate);
+        return db.ref('baby_logs/' + dateKey);
     }
 
-    // --- REALTIME LISTENERS (child_added/changed/removed) ---
+    function normalizeEntry(entry, idKey) {
+        if (!entry) return entry;
+        // Ensure id exists
+        if (!entry.id && idKey) entry.id = idKey;
+
+        // Fix old Formula shape: value was "Formula" and detail held "X oz"
+        if (entry.type === 'Formula' && entry.value === 'Formula' && entry.detail && /oz/i.test(entry.detail)) {
+            entry.value = entry.detail;  // show/edit quantity correctly
+            entry.detail = '';
+        }
+        return entry;
+    }
+
     function listenToData() {
         if (!isFirebaseReady) return;
 
-        const dateKey = getLocalDateKey(currentDate);
-        const ref = db.ref('baby_logs/' + dateKey);
+        // Detach old listeners
+        if (currentDbRef) currentDbRef.off();
+        currentDbRef = refForCurrentDate();
 
-        // Detach old listeners safely
-        if (currentLogsRef) currentLogsRef.off();
-        currentLogsRef = ref;
+        // Start clean UI
+        logs = [];
+        renderLogs();
 
-        logsMap = {};
-        document.getElementById('log-list').innerHTML = '<div class="empty-state">Syncing...</div>';
-
-        // child_* gives true realtime incremental sync across devices (no full overwrites)
-        ref.on('child_added', (snapshot) => {
-            const entry = snapshot.val();
+        // Use child_* listeners for true realtime sync without overwriting entire day
+        currentDbRef.on('child_added', (snapshot) => {
+            const entry = normalizeEntry(snapshot.val(), snapshot.key);
             if (!entry) return;
-            // Guarantee id matches key (important for edit/delete even if old data is missing id)
-            entry.id = snapshot.key;
-            logsMap[snapshot.key] = entry;
-            renderLogsFromMap();
+            // Avoid duplicates if listener re-attaches
+            const idx = logs.findIndex(x => x.id === entry.id);
+            if (idx === -1) logs.push(entry);
+            renderLogs();
         });
 
-        ref.on('child_changed', (snapshot) => {
-            const entry = snapshot.val();
+        currentDbRef.on('child_changed', (snapshot) => {
+            const entry = normalizeEntry(snapshot.val(), snapshot.key);
             if (!entry) return;
-            entry.id = snapshot.key;
-            logsMap[snapshot.key] = entry;
-            renderLogsFromMap();
+            const idx = logs.findIndex(x => x.id === entry.id);
+            if (idx !== -1) logs[idx] = entry;
+            else logs.push(entry);
+            renderLogs();
         });
 
-        ref.on('child_removed', (snapshot) => {
-            delete logsMap[snapshot.key];
-            renderLogsFromMap();
+        currentDbRef.on('child_removed', (snapshot) => {
+            logs = logs.filter(x => x.id !== snapshot.key);
+            renderLogs();
         });
 
-        // Helpful permission error surface
-        ref.on('value', () => {}, (error) => {
+        // Surface permission issues
+        currentDbRef.on('value', () => {}, (error) => {
             console.error("Firebase Permission Error", error);
             setStatus("PERMISSION DENIED 🔒");
-            alert("Firebase Permission Denied.
-Please check Realtime Database Rules.");
         });
     }
-
-    // --- ATOMIC WRITE FUNCTIONS (Prevents Overwrite + ID collisions) ---
-    function addEntry(type, value, detail, icon, color, timeStr, endTimeStr = null) {
-        if (!isFirebaseReady) return;
-
-        const dateKey = getLocalDateKey(currentDate);
-        const ref = db.ref('baby_logs/' + dateKey);
-
-        // push() guarantees unique IDs even if two devices add at the same millisecond
-        const newRef = ref.push();
-        const newId = newRef.key;
-
-        const entry = {
-            id: newId,
-            dateKey: dateKey,
-            sortTime: buildSortTimeForSelectedDay(timeStr),
-            displayTime: convertTo12Hour(timeStr),
-            rawTime: timeStr,
-            rawEndTime: endTimeStr,
-            type,
-            value,
-            detail,
-            icon,
-            color,
-            // Server timestamp helps debugging/ordering if needed
-            createdAt: firebase.database.ServerValue.TIMESTAMP
-        };
-
-        newRef.set(entry).catch(err => alert("Error saving: " + err.message));
-    }
-
-    function deleteEntry(id) {
-        if (confirm("Delete this entry?")) {
-            const dateKey = getLocalDateKey(currentDate);
-            db.ref('baby_logs/' + dateKey + '/' + id).remove().catch(err => alert("Error deleting: " + err.message));
-        }
-    }
-
-    function updateEntryInCloud(entry) {
-        const dateKey = getLocalDateKey(currentDate);
-        // Recompute sortTime to keep ordering consistent after editing
-        entry.sortTime = buildSortTimeForSelectedDay(entry.rawTime || "00:00");
-        db.ref('baby_logs/' + dateKey + '/' + entry.id).update(entry).catch(err => alert("Error updating: " + err.message));
-    }
-
-    function clearDayData() {
-        if (confirm(`Clear logs for ${currentDate.toLocaleDateString()}?`)) {
-            const dateKey = getLocalDateKey(currentDate);
-            if (isFirebaseReady) db.ref('baby_logs/' + dateKey).remove();
-        }
-    }
-
-    // ----------------------------------------
 
     function setDefaultTimes() {
         const now = new Date();
         const timeString = now.toTimeString().substring(0, 5);
         document.getElementById('formula-time').value = timeString;
         document.getElementById('nap-start').value = timeString;
-        const later = new Date(now.getTime() + 60 * 60000);
+        const later = new Date(now.getTime() + 60*60000);
         document.getElementById('nap-end').value = later.toTimeString().substring(0, 5);
     }
 
@@ -553,7 +504,13 @@ Please check Realtime Database Rules.");
         const [year, month, day] = e.target.value.split('-');
         currentDate = new Date(year, month - 1, day);
         updateDateDisplay();
-        listenToData(); // this detaches and re-attaches correctly
+
+        if (isFirebaseReady) {
+            listenToData();
+        } else {
+            logs = [];
+            renderLogs();
+        }
     });
 
     function updateDateDisplay() {
@@ -589,8 +546,9 @@ Please check Realtime Database Rules.");
     function addFormula() {
         const val = document.getElementById('formula-input').value;
         const timeVal = document.getElementById('formula-time').value;
-        if (!val) return;
-        // FIX: store amount as the value (not the word "Formula"), so edit works correctly (qty edits qty)
+        if(!val) return;
+
+        // Keep UI identical, but store value as quantity to allow proper edit on all devices
         addEntry('Formula', `${val} oz`, '', '🍼', 'var(--ios-blue)', timeVal);
         document.getElementById('formula-input').value = '';
     }
@@ -599,7 +557,7 @@ Please check Realtime Database Rules.");
         const val = document.getElementById('food-input').value;
         const now = new Date();
         const timeString = now.toTimeString().substring(0, 5);
-        if (!val) return;
+        if(!val) return;
         addEntry('Food', val, '', '🍽️', 'var(--ios-green)', timeString);
         document.getElementById('food-input').value = '';
     }
@@ -607,12 +565,13 @@ Please check Realtime Database Rules.");
     function addNap() {
         const start = document.getElementById('nap-start').value;
         const end = document.getElementById('nap-end').value;
-        if (!start || !end) return;
+        if(!start || !end) return;
 
+        // Calc Duration for Display
         const d1 = new Date("2000-01-01 " + start);
         const d2 = new Date("2000-01-01 " + end);
         let diffMs = d2 - d1;
-        if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+        if(diffMs < 0) diffMs += 24*60*60*1000;
         const diffHrs = Math.floor(diffMs / 3600000);
         const diffMins = Math.round(((diffMs % 3600000) / 60000));
         const durationStr = (diffHrs > 0 ? diffHrs + 'h ' : '') + diffMins + 'm';
@@ -627,7 +586,7 @@ Please check Realtime Database Rules.");
         const val = document.getElementById('note-input').value;
         const now = new Date();
         const timeString = now.toTimeString().substring(0, 5);
-        if (!val) return;
+        if(!val) return;
         addEntry('Note', val, '', '📝', 'var(--ios-purple)', timeString);
         document.getElementById('note-input').value = '';
     }
@@ -644,10 +603,59 @@ Please check Realtime Database Rules.");
         addEntry('Diapers', selectedDiaperType, '', '💩', 'var(--ios-orange)', timeString);
     }
 
-    // --- EDIT LOGIC ---
+    // --- WRITE FUNCTIONS (no full-day overwrite) ---
+    function addEntry(type, value, detail, icon, color, timeStr, endTimeStr = null) {
+        if (!isFirebaseReady) {
+            alert("Firebase Error.");
+            return;
+        }
+
+        // Calculate sortTime for selected day + given time
+        const entryDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+        const [hours, minutes] = timeStr.split(':');
+        entryDate.setHours(parseInt(hours, 10) || 0, parseInt(minutes, 10) || 0, 0, 0);
+
+        const dayRef = refForCurrentDate();
+        const newRef = dayRef.push(); // unique ID across devices
+        const id = newRef.key;
+
+        const entry = {
+            id: id,
+            dateStr: currentDate.toDateString(),
+            sortTime: entryDate.getTime(),
+            displayTime: convertTo12Hour(timeStr),
+            rawTime: timeStr,
+            rawEndTime: endTimeStr,
+            type, value, detail, icon, color,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        newRef.set(entry);
+        // logs array will update via realtime listeners
+    }
+
+    function updateEntry(entry) {
+        if (!isFirebaseReady) return;
+        const dayRef = refForCurrentDate();
+        return dayRef.child(entry.id).update(entry);
+    }
+
+    function removeEntry(id) {
+        if (!isFirebaseReady) return;
+        const dayRef = refForCurrentDate();
+        return dayRef.child(id).remove();
+    }
+
+    // --- EDIT & DELETE ---
+    function deleteEntry(id) {
+        if(confirm("Delete this entry?")) {
+            removeEntry(id);
+        }
+    }
+
     function editEntry(id) {
-        const entry = logsMap[id];
-        if (!entry) return;
+        const entry = logs.find(item => item.id == id);
+        if(!entry) return;
         currentEditId = id;
 
         if (entry.type === 'Nap') {
@@ -672,9 +680,11 @@ Please check Realtime Database Rules.");
     }
 
     function saveEdit() {
-        if (!currentEditId) return;
-        const entry = logsMap[currentEditId];
-        if (!entry) return;
+        if(!currentEditId) return;
+        const index = logs.findIndex(l => l.id == currentEditId);
+        if(index === -1) return;
+
+        const entry = logs[index];
 
         if (isEditingNap) {
             const newStart = document.getElementById('edit-nap-start').value;
@@ -684,7 +694,7 @@ Please check Realtime Database Rules.");
                 const d1 = new Date("2000-01-01 " + newStart);
                 const d2 = new Date("2000-01-01 " + newEnd);
                 let diffMs = d2 - d1;
-                if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+                if(diffMs < 0) diffMs += 24*60*60*1000;
                 const diffHrs = Math.floor(diffMs / 3600000);
                 const diffMins = Math.round(((diffMs % 3600000) / 60000));
                 const durationStr = (diffHrs > 0 ? diffHrs + 'h ' : '') + diffMins + 'm';
@@ -694,7 +704,11 @@ Please check Realtime Database Rules.");
                 entry.rawTime = newStart;
                 entry.rawEndTime = newEnd;
                 entry.displayTime = convertTo12Hour(newStart);
-                entry.sortTime = buildSortTimeForSelectedDay(newStart);
+
+                const entryDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+                const [hours, minutes] = newStart.split(':');
+                entryDate.setHours(parseInt(hours, 10) || 0, parseInt(minutes, 10) || 0, 0, 0);
+                entry.sortTime = entryDate.getTime();
             }
         } else {
             const newVal = document.getElementById('edit-val').value;
@@ -703,16 +717,30 @@ Please check Realtime Database Rules.");
                 entry.value = newVal;
                 entry.rawTime = newTime;
                 entry.displayTime = convertTo12Hour(newTime);
-                entry.sortTime = buildSortTimeForSelectedDay(newTime);
+
+                const entryDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+                const [hours, minutes] = newTime.split(':');
+                entryDate.setHours(parseInt(hours, 10) || 0, parseInt(minutes, 10) || 0, 0, 0);
+                entry.sortTime = entryDate.getTime();
             }
         }
 
-        updateEntryInCloud(entry);
+        updateEntry(entry);
         closeEditModal();
     }
 
+    function clearDayData() {
+        if(confirm(`Clear logs for ${currentDate.toLocaleDateString()}?`)) {
+            if(isFirebaseReady) {
+                refForCurrentDate().remove();
+            }
+            logs = [];
+            renderLogs();
+        }
+    }
+
     function convertTo12Hour(time24) {
-        if (!time24) return "--:--";
+        if(!time24) return "--:--";
         const [hours, minutes] = time24.split(':');
         let h = parseInt(hours, 10);
         const ampm = h >= 12 ? 'PM' : 'AM';
@@ -730,16 +758,12 @@ Please check Realtime Database Rules.");
         });
     }
 
-    function renderLogsFromMap() {
-        logs = Object.values(logsMap || {});
-        renderLogs();
-    }
-
     function renderLogs() {
         const list = document.getElementById('log-list');
-        let dayLogs = sortLogs([...logs]);
+        let dayLogs = [...logs];
+        dayLogs = sortLogs(dayLogs);
 
-        if (dayLogs.length === 0) {
+        if(dayLogs.length === 0) {
             list.innerHTML = '<div class="empty-state">No entries for this date.</div>';
             return;
         }
@@ -747,7 +771,7 @@ Please check Realtime Database Rules.");
         let html = '';
         dayLogs.forEach(log => {
             const displayTime = log.displayTime ? log.displayTime : '--:--';
-            let displayValue = (log.value || '').replace(/💩|💧/g, '').trim();
+            let displayValue = (log.value || '').toString().replace(/💩|💧/g, '').trim();
             const showTime = (log.type !== 'Diapers' && log.type !== 'Note' && log.type !== 'Food');
 
             html += `
@@ -767,7 +791,7 @@ Please check Realtime Database Rules.");
     }
 
     function generateReport(mode) {
-        if (logs.length === 0) {
+        if(logs.length === 0) {
             alert("No logs to report.");
             return;
         }
@@ -775,45 +799,33 @@ Please check Realtime Database Rules.");
         const dayLogs = sortLogs([...logs]);
         const dateStr = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
-        let report = `${babyName.toUpperCase()}'S DAILY REPORT
-`;
-        report += `Date: ${dateStr}
-`;
-        report += `----------------------------
-
-`;
+        let report = `${babyName.toUpperCase()}'S DAILY REPORT\n`;
+        report += `Date: ${dateStr}\n`;
+        report += `----------------------------\n\n`;
 
         dayLogs.forEach(log => {
             const time = log.displayTime || '--:--';
-            let val = (log.value || '').replace(/💩|💧/g, '').trim();
+            let val = (log.value || '').toString().replace(/💩|💧/g, '').trim();
 
             if (log.type === 'Formula') {
-                report += `🍼 ${val} ${time}
-`;
+                report += `🍼 ${val} ${time}\n`;
             }
             else if (log.type === 'Food') {
-                report += `🍽️ ${val}
-`;
+                report += `🍽️ ${val}\n`;
             }
             else if (log.type === 'Nap') {
                 const durationOnly = val.replace("Nap ", "");
-                report += `🛏️${durationOnly}
-${log.detail}
-`;
+                report += `🛏️${durationOnly}\n${log.detail}\n`;
             }
             else if (log.type === 'Diapers') {
-                report += `💩 ${val}
-`;
+                report += `💩 ${val}\n`;
             }
             else if (log.type === 'Note') {
-                report += `📝 ${val}
-`;
+                report += `📝 ${val}\n`;
             }
         });
 
-        report += `
-----------------------------
-`;
+        report += `\n----------------------------\n`;
 
         navigator.clipboard.writeText(report).catch(err => console.log('Copy failed', err));
 
@@ -830,7 +842,7 @@ ${log.detail}
             } else if (ua.indexOf("android") > -1) {
                 smsLink = `sms:?body=${encodedReport}`;
             } else {
-                alert("Report copied to clipboard!");
+                alert("Report copied to clipboard! Paste into your message app.");
                 return;
             }
             window.location.href = smsLink;
