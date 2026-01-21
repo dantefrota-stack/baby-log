@@ -41,7 +41,7 @@
             min-height: 100vh;
             border-left: 1px solid #ddd;
             border-right: 1px solid #ddd;
-            padding-bottom: 220px;
+            padding-bottom: 200px;
         }
 
         /* Top Nav */
@@ -63,10 +63,7 @@
         }
 
         #connection-status {
-            font-size: 11px;
-            color: #8E8E93;
-            margin-top: 4px;
-            font-weight: 500;
+            font-size: 11px; color: #8E8E93; margin-top: 4px; font-weight: 500;
         }
 
         /* Header */
@@ -126,31 +123,20 @@
             width: 30px; font-size: 26px; margin-right: 12px; text-align: center; flex-shrink: 0; 
         }
 
-        /* Inputs - IMPROVED LAYOUT FOR SMALL SCREENS */
+        /* Inputs */
         .input-row { 
-            display: flex; flex: 1; 
-            align-items: center; 
-            gap: 8px; 
-            min-width: 0; /* Prevents overflow */
+            display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; 
         }
         
         input[type="text"], input[type="number"] {
             border: none; font-size: 18px; font-weight: 500; flex: 1; outline: none; padding: 5px 0; 
-            min-width: 40px; /* Allow shrinking */
-            background: transparent; color: #000;
+            min-width: 40px; background: transparent; color: #000;
         }
         ::placeholder { color: #C7C7CC; font-weight: 400; }
 
-        /* TIME WRAPPER FIX: Allow shrinking so button stays */
         .time-wrapper {
-            background-color: #E5E5EA; 
-            border-radius: 8px; 
-            padding: 6px 4px; 
-            display: flex; 
-            align-items: center; 
-            flex-shrink: 1; /* Allow shrinking */
-            min-width: 85px; /* Minimum legible width */
-            justify-content: center;
+            background-color: #E5E5EA; border-radius: 8px; padding: 6px 4px; display: flex; align-items: center; 
+            flex-shrink: 1; min-width: 85px; justify-content: center;
         }
         
         input[type="time"] {
@@ -159,11 +145,7 @@
         }
 
         .add-btn {
-            background: none; border: none; cursor: pointer; padding: 0; 
-            flex-shrink: 0; /* NEVER SHRINK BUTTON */
-            width: 36px; height: 36px; 
-            display: flex; align-items: center; justify-content: center; 
-            margin-left: 4px;
+            background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; margin-left: 4px;
         }
         .add-circle {
             width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 24px; line-height: 30px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -241,7 +223,7 @@
             <span id="baby-name-display">BABY</span> 
             <span style="font-size:12px; color: #8E8E93;">✏️</span>
         </div>
-        <div id="connection-status">Initializing...</div>
+        <div id="connection-status">Connecting...</div>
     </div>
 
     <header>
@@ -293,11 +275,11 @@
                 <div class="list-item">
                     <div class="icon-box indigo-icon">🛏️</div>
                     <div class="input-row" style="justify-content: flex-start;">
-                        <div class="time-wrapper">
+                        <div class="time-wrapper" style="flex: 1;">
                             <input type="time" id="nap-start">
                         </div>
                         <span style="margin: 0 4px; font-weight:600; color: #8E8E93; font-size: 14px;">to</span>
-                        <div class="time-wrapper">
+                        <div class="time-wrapper" style="flex: 1;">
                             <input type="time" id="nap-end">
                         </div>
                         <button class="add-btn" style="margin-left: auto;" onclick="addNap()">
@@ -341,7 +323,7 @@
     <div class="list-group">
         <div class="list-header">Daily Log</div>
         <div class="card" id="log-list">
-            <div class="empty-state">Connecting to Database...</div>
+            <div class="empty-state">Loading...</div>
         </div>
     </div>
 
@@ -396,7 +378,6 @@
     let db;
     let isFirebaseReady = false;
 
-    // Initialize
     try {
         if (firebase.apps.length === 0) {
             firebase.initializeApp(firebaseConfig);
@@ -423,12 +404,10 @@
         loadName();
         updateDateDisplay();
         setDefaultTimes();
-        // FORCE LOAD FROM CLOUD immediately
         listenToData();
     };
 
-    // --- CRITICAL FIX: LOCAL DATE KEY GENERATOR ---
-    // Forces date to be strictly "YYYY-MM-DD" based on user's device clock, ignoring UTC
+    // --- TIMEZONE FIX: LOCAL DATE KEY GENERATOR ---
     function getLocalDateKey(dateObj) {
         const year = dateObj.getFullYear();
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -436,15 +415,14 @@
         return `${year}-${month}-${day}`;
     }
 
-    // --- FIREBASE SYNC ---
+    // --- ATOMIC SYNC ---
     function listenToData() {
         if (!isFirebaseReady) return;
         
         const dateKey = getLocalDateKey(currentDate);
-        // Visual Feedback
-        document.getElementById('log-list').innerHTML = '<div class="empty-state">Loading data from cloud...</div>';
-        
         const dbRef = db.ref('baby_logs/' + dateKey);
+
+        document.getElementById('log-list').innerHTML = '<div class="empty-state">Syncing...</div>';
 
         dbRef.on('value', (snapshot) => {
             const data = snapshot.val();
@@ -456,30 +434,56 @@
             renderLogs();
         }, (error) => {
             document.getElementById('connection-status').innerText = "PERMISSION DENIED 🔒";
-            document.getElementById('log-list').innerHTML = '<div class="empty-state" style="color:red">Database Locked. Check Firebase Rules.</div>';
+            alert("Firebase Permission Denied.\nPlease check Realtime Database Rules.");
         });
     }
 
-    function saveToCloud() {
+    // --- ATOMIC WRITE FUNCTIONS (Prevents Overwrite) ---
+    function addEntry(type, value, detail, icon, color, timeStr, endTimeStr = null) {
         if (!isFirebaseReady) return;
         const dateKey = getLocalDateKey(currentDate);
         
-        let updates = {};
-        logs.forEach(log => {
-            updates[log.id] = log;
-        });
-        
-        // Ensure node is clean
-        if (logs.length > 0) {
-            db.ref('baby_logs/' + dateKey).set(updates).catch(err => {
-                alert("ERROR SAVING: " + err.message + "\nCheck your Firebase Console Rules.");
-            });
-        } else {
-            db.ref('baby_logs/' + dateKey).remove().catch(err => {
-                alert("ERROR DELETING: " + err.message);
-            });
+        const entryDate = new Date();
+        const [hours, minutes] = timeStr.split(':');
+        entryDate.setHours(hours, minutes);
+
+        const newId = Date.now().toString(); // Unique ID
+        const entry = {
+            id: newId,
+            dateStr: currentDate.toDateString(),
+            sortTime: entryDate.getTime(),
+            displayTime: convertTo12Hour(timeStr),
+            rawTime: timeStr,
+            rawEndTime: endTimeStr, 
+            type, value, detail, icon, color
+        };
+
+        // Write specific path (Atomic)
+        db.ref('baby_logs/' + dateKey + '/' + newId).set(entry).catch(err => alert("Error saving: " + err.message));
+    }
+
+    function deleteEntry(id) {
+        if(confirm("Delete this entry?")) {
+            const dateKey = getLocalDateKey(currentDate);
+            db.ref('baby_logs/' + dateKey + '/' + id).remove().catch(err => alert("Error deleting: " + err.message));
         }
     }
+
+    function updateEntryInCloud(entry) {
+        const dateKey = getLocalDateKey(currentDate);
+        db.ref('baby_logs/' + dateKey + '/' + entry.id).update(entry).catch(err => alert("Error updating: " + err.message));
+    }
+
+    function clearDayData() {
+        if(confirm(`Clear logs for ${currentDate.toLocaleDateString()}?`)) {
+            const dateKey = getLocalDateKey(currentDate);
+            if(isFirebaseReady) {
+                db.ref('baby_logs/' + dateKey).remove();
+            }
+        }
+    }
+
+    // ----------------------------------------
 
     function setDefaultTimes() {
         const now = new Date();
@@ -499,9 +503,6 @@
         if(isFirebaseReady) {
             db.ref('baby_logs').off(); // Detach old
             listenToData(); // Attach new
-        } else {
-            logs = [];
-            renderLogs();
         }
     });
 
@@ -509,8 +510,10 @@
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         document.getElementById('date-display').innerText = currentDate.toLocaleDateString('en-US', options);
         
-        const dateKey = getLocalDateKey(currentDate);
-        datePicker.value = dateKey; // Force match
+        const yyyy = currentDate.getFullYear();
+        const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(currentDate.getDate()).padStart(2, '0');
+        datePicker.value = `${yyyy}-${mm}-${dd}`;
         
         const today = new Date();
         const isToday = today.toDateString() === currentDate.toDateString();
@@ -543,10 +546,9 @@
 
     function addFood() {
         const val = document.getElementById('food-input').value;
-        if(!val) return;
-        // Use current time just for sorting order
         const now = new Date();
         const timeString = now.toTimeString().substring(0, 5);
+        if(!val) return;
         addEntry('Food', val, '', '🍽️', 'var(--ios-green)', timeString);
         document.getElementById('food-input').value = '';
     }
@@ -556,7 +558,7 @@
         const end = document.getElementById('nap-end').value;
         if(!start || !end) return;
 
-        // Calc Duration
+        // Calc Duration for Display
         const d1 = new Date("2000-01-01 " + start);
         const d2 = new Date("2000-01-01 " + end);
         let diffMs = d2 - d1;
@@ -592,33 +594,7 @@
         addEntry('Diapers', selectedDiaperType, '', '💩', 'var(--ios-orange)', timeString);
     }
 
-    function addEntry(type, value, detail, icon, color, timeStr, endTimeStr = null) {
-        // We still need a Date object for sorting within the day
-        const entryDate = new Date();
-        const [hours, minutes] = timeStr.split(':');
-        entryDate.setHours(hours, minutes);
-
-        const entry = {
-            id: Date.now().toString(),
-            dateStr: currentDate.toDateString(), // Display purpose
-            sortTime: entryDate.getTime(),
-            displayTime: convertTo12Hour(timeStr),
-            rawTime: timeStr,
-            rawEndTime: endTimeStr, 
-            type, value, detail, icon, color
-        };
-        logs.push(entry);
-        saveToCloud();
-    }
-
-    // --- EDIT & DELETE ---
-    function deleteEntry(id) {
-        if(confirm("Delete this entry?")) {
-            logs = logs.filter(item => item.id != id);
-            saveToCloud();
-        }
-    }
-
+    // --- EDIT LOGIC ---
     function editEntry(id) {
         const entry = logs.find(item => item.id == id);
         if(!entry) return;
@@ -647,8 +623,10 @@
 
     function saveEdit() {
         if(!currentEditId) return;
-        const index = logs.findIndex(l => l.id == currentEditId);
-        if(index === -1) return;
+        const entryIndex = logs.findIndex(l => l.id == currentEditId);
+        if(entryIndex === -1) return;
+        
+        let entry = logs[entryIndex]; // Copy reference
 
         if (isEditingNap) {
             const newStart = document.getElementById('edit-nap-start').value;
@@ -663,45 +641,34 @@
                 const diffMins = Math.round(((diffMs % 3600000) / 60000));
                 const durationStr = (diffHrs > 0 ? diffHrs + 'h ' : '') + diffMins + 'm';
                 
-                logs[index].value = `Nap (${durationStr})`;
-                logs[index].detail = `${convertTo12Hour(newStart)} - ${convertTo12Hour(newEnd)}`;
-                logs[index].rawTime = newStart;
-                logs[index].rawEndTime = newEnd;
-                logs[index].displayTime = convertTo12Hour(newStart);
+                entry.value = `Nap (${durationStr})`;
+                entry.detail = `${convertTo12Hour(newStart)} - ${convertTo12Hour(newEnd)}`;
+                entry.rawTime = newStart;
+                entry.rawEndTime = newEnd;
+                entry.displayTime = convertTo12Hour(newStart);
                 
                 const [hours, minutes] = newStart.split(':');
-                const newDate = new Date(logs[index].sortTime); 
+                const newDate = new Date(entry.sortTime); 
                 newDate.setHours(hours, minutes);
-                logs[index].sortTime = newDate.getTime();
+                entry.sortTime = newDate.getTime();
             }
         } else {
             const newVal = document.getElementById('edit-val').value;
             const newTime = document.getElementById('edit-time').value;
             if (newVal && newTime) {
-                logs[index].value = newVal;
-                logs[index].rawTime = newTime;
-                logs[index].displayTime = convertTo12Hour(newTime);
+                entry.value = newVal;
+                entry.rawTime = newTime;
+                entry.displayTime = convertTo12Hour(newTime);
                 
                 const [hours, minutes] = newTime.split(':');
-                const newDate = new Date(logs[index].sortTime); 
+                const newDate = new Date(entry.sortTime); 
                 newDate.setHours(hours, minutes);
-                logs[index].sortTime = newDate.getTime();
+                entry.sortTime = newDate.getTime();
             }
         }
         
-        saveToCloud();
+        updateEntryInCloud(entry);
         closeEditModal();
-    }
-    
-    function clearDayData() {
-        if(confirm(`Clear logs for ${currentDate.toLocaleDateString()}?`)) {
-            const dateKey = getLocalDateKey(currentDate);
-            if(isFirebaseReady) {
-                db.ref('baby_logs/' + dateKey).remove();
-            }
-            logs = [];
-            renderLogs();
-        }
     }
 
     function convertTo12Hour(time24) {
@@ -729,7 +696,7 @@
         dayLogs = sortLogs(dayLogs);
 
         if(dayLogs.length === 0) {
-            list.innerHTML = '<div class="empty-state">No entries found for this date.</div>';
+            list.innerHTML = '<div class="empty-state">No entries for this date.</div>';
             return;
         }
 
@@ -773,14 +740,14 @@
             let val = log.value.replace(/💩|💧/g, '').trim();
             
             if (log.type === 'Formula') {
-                report += `🍼 ${log.detail} ${time}\n`; // No brackets
+                report += `🍼 ${log.detail} ${time}\n`; 
             } 
             else if (log.type === 'Food') {
                 report += `🍽️ ${val}\n`; 
             }
             else if (log.type === 'Nap') {
-                // FIXED NAP FORMAT: Icon(Duration) \n Time Range
                 const durationOnly = val.replace("Nap ", ""); 
+                // NEW NAP FORMAT
                 report += `🛏️${durationOnly}\n${log.detail}\n`; 
             }
             else if (log.type === 'Diapers') {
