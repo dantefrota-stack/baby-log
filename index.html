@@ -364,7 +364,7 @@
 </div>
 
 <script>
-    // --- FIREBASE CONFIGURATION ---
+    // --- FIREBASE CONFIGURATION (INJECTED) ---
     const firebaseConfig = {
         apiKey: "AIzaSyDiqYfep_8Myjo1oJ688hLx1UT2O1gzWyM",
         authDomain: "babylogapp-cb457.firebaseapp.com",
@@ -731,16 +731,15 @@
             let val = log.value.replace(/💩|💧/g, '').trim();
             
             if (log.type === 'Formula') {
-                report += `🍼 ${log.detail} [${time}]\n`;
+                // FIXED FORMULA: removed brackets
+                report += `🍼 ${log.detail} ${time}\n`;
             } 
             else if (log.type === 'Food') {
                 report += `🍽️ ${val}\n`; 
             }
             else if (log.type === 'Nap') {
                 // FIXED NAP REPORT FORMAT
-                // 1. Extract "(1h 0m)" from "Nap (1h 0m)"
                 const durationOnly = val.replace("Nap ", ""); 
-                // 2. Output: Icon Duration (Newline) Range
                 report += `🛏️${durationOnly}\n${log.detail}\n`; 
             }
             else if (log.type === 'Diapers') {
