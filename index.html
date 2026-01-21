@@ -8,7 +8,7 @@
         :root {
             --ios-bg: #F2F2F7;
             --ios-card: #FFFFFF;
-            --ios-blue: #007AFF; /* Cor Padrão dos Botões */
+            --ios-blue: #007AFF;
             --ios-green: #34C759;
             --ios-orange: #FF9500;
             --ios-purple: #5856D6;
@@ -28,8 +28,6 @@
             color: var(--ios-text);
             display: flex;
             justify-content: center;
-            -webkit-text-size-adjust: 100%;
-            text-size-adjust: 100%;
         }
 
         #app-container {
@@ -37,16 +35,33 @@
             max-width: 450px;
             background-color: var(--ios-bg);
             min-height: 100vh;
-            min-height: 100dvh;
             border-left: 1px solid #ddd;
             border-right: 1px solid #ddd;
-            padding-bottom: calc(180px + env(safe-area-inset-bottom));
+            padding-bottom: 180px;
         }
 
-        /* Header */
+        /* Top Title Bar (Baby Name) */
+        .top-nav {
+            background-color: rgba(242, 242, 247, 0.98);
+            padding: 10px 20px 5px 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .app-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--ios-text);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Header Date */
         header {
             background-color: rgba(242, 242, 247, 0.98);
-            padding: 18px 20px;
+            padding: 5px 20px 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -57,72 +72,32 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Date selector (desktop + mobile safe) */
-        .date-tools {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .day-nav {
-            background: transparent;
-            border: none;
-            color: var(--ios-blue);
-            font-size: 26px;
-            line-height: 1;
-            padding: 4px 8px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .day-nav:active {
-            background: rgba(0,122,255,0.12);
-        }
-
-        .day-nav:disabled {
-            opacity: 0.35;
-            cursor: default;
-        }
-
         .date-container {
+            position: relative;
             display: flex;
             align-items: center;
-            min-width: 170px;
+            min-width: 120px; 
             justify-content: flex-end;
-            padding: 4px 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        .date-container:active {
-            background: rgba(0,122,255,0.12);
         }
 
         #date-display {
             color: var(--ios-blue);
             font-size: 19px;
             font-weight: 500;
-            pointer-events: none;
+            pointer-events: none; 
+        }
+
+        input[type="date"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer; z-index: 10;
         }
 
         .calendar-icon {
-            font-size: 24px;
-            color: var(--ios-blue);
-            margin-left: 5px;
-            pointer-events: none;
+            font-size: 24px; color: var(--ios-blue); margin-left: 5px; pointer-events: none;
         }
 
-        /* Keep the real <input type="date"> accessible but out of the way */
-        #date-picker {
-            position: absolute;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-        }
-/* Lists & Cards */
+        /* Lists & Cards */
         .list-group { margin: 24px 16px; }
         
         .list-header {
@@ -177,14 +152,9 @@
             background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; margin-left: 8px;
         }
         
-
-        button, .segment-opt, input[type="date"], input[type="time"] {
-            touch-action: manipulation;
-        }
-
         .add-circle {
             width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 24px; line-height: 30px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            /* Background color set inline in HTML to Blue now */
+            /* Background set inline */
         }
 
         /* Diaper Control */
@@ -223,38 +193,17 @@
 
         /* Bottom Action */
         .bottom-action {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 20px 20px calc(20px + env(safe-area-inset-bottom)) 20px; background: rgba(242, 242, 247, 0.98); backdrop-filter: blur(10px); box-sizing: border-box; border-top: 1px solid rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 12px;
+            position: fixed; bottom: 0; width: 100%; max-width: 450px; padding: 20px; background: rgba(242, 242, 247, 0.98); backdrop-filter: blur(10px); box-sizing: border-box; border-top: 1px solid rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 12px;
         }
         .share-btn {
             width: 100%; background-color: #000; color: white; padding: 18px; border-radius: 14px; border: none; font-size: 19px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-        .share-row { display: flex; gap: 10px; }
-        .share-row .share-btn { width: auto; flex: 1; justify-content: center; }
-        .whatsapp-btn { background-color: var(--ios-green); }
-
         
         .reset-link {
             text-align: center; color: var(--ios-red); font-size: 15px; font-weight: 500; text-decoration: none; margin-top: 5px; cursor: pointer; padding: 10px;
         }
         
-        
-        .data-link {
-            margin-top: 10px;
-            font-size: 14px;
-            color: var(--ios-blue);
-            text-decoration: underline;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .modal-help {
-            font-size: 14px;
-            line-height: 1.35;
-            color: #3C3C43;
-            opacity: 0.85;
-            margin: 10px 0 16px;
-        }
-.empty-state { text-align: center; color: var(--ios-gray); padding: 40px 20px; font-style: italic; font-size: 17px; }
+        .empty-state { text-align: center; color: var(--ios-gray); padding: 40px 20px; font-style: italic; font-size: 17px; }
         .blue-icon { color: var(--ios-blue); }
         .green-icon { color: var(--ios-green); }
         .purple-icon { color: var(--ios-purple); }
@@ -291,16 +240,20 @@
 <body>
 
 <div id="app-container">
+    
+    <div class="top-nav">
+        <div class="app-name" onclick="editName()">
+            <span id="baby-name-display">BABY</span> 
+            <span style="font-size:12px; color: #8E8E93;">✏️</span>
+        </div>
+    </div>
+
     <header>
-        <div id="date-label" style="font-weight: 800; font-size: 24px; cursor: pointer;" title="Click to jump to Today">Today</div>
-        <div class="date-tools">
-            <button class="day-nav" id="prev-day" type="button" aria-label="Previous day">‹</button>
-            <div class="date-container" id="date-container" role="button" tabindex="0" aria-label="Select date">
-                <span id="date-display">Select Date</span>
-                <span class="calendar-icon">📅</span>
-            </div>
-            <button class="day-nav" id="next-day" type="button" aria-label="Next day">›</button>
-            <input type="date" id="date-picker" aria-label="Date Picker">
+        <div id="date-label" style="font-weight: 800; font-size: 24px;">Today</div>
+        <div class="date-container">
+            <span id="date-display">Select Date</span>
+            <input type="date" id="date-picker">
+            <span class="calendar-icon">📅</span>
         </div>
     </header>
 
@@ -399,35 +352,10 @@
 </div>
 
 <div class="bottom-action">
-    <div class="share-row">
-        <button class="share-btn" onclick="sendTextReport()">
-            <span>💬</span> Text
-        </button>
-        <button class="share-btn whatsapp-btn" onclick="sendWhatsAppReport()">
-            <span>🟢</span> WhatsApp
-        </button>
-    </div>
+    <button class="share-btn" onclick="generateReport()">
+        <span>💬</span> Send Text Report
+    </button>
     <div class="reset-link" onclick="clearDayData()">Clear Only Today's Log</div>
-    <div class="data-link" onclick="openDataModal()">Backup / Restore Data</div>
-</div>
-
-
-<div id="data-modal" class="modal-overlay">
-    <div class="modal-card">
-        <div class="modal-title">Backup / Restore</div>
-        <div class="modal-help">
-            Your data is saved on this device (local storage). Use Export/Import to move it to another phone/PC and keep all past days available anywhere.
-        </div>
-        <div class="modal-btn-row" style="gap: 10px; flex-wrap: wrap;">
-            <button class="modal-btn btn-save" onclick="exportSelectedDay()">Export Selected Day</button>
-            <button class="modal-btn" onclick="exportData()">Export Full Backup</button>
-            <button class="modal-btn" onclick="triggerImport()">Import JSON</button>
-        </div>
-        <input type="file" id="import-file" accept="application/json,.json" style="display:none">
-        <div style="margin-top: 14px;">
-            <button class="modal-btn btn-cancel" onclick="closeDataModal()">Close</button>
-        </div>
-    </div>
 </div>
 
 <div id="edit-modal" class="modal-overlay">
@@ -435,7 +363,7 @@
         <div class="modal-title">Edit Entry</div>
         
         <div id="regular-edit-fields">
-            <span id="edit-val-label" class="modal-label">Value</span>
+            <span class="modal-label">Value</span>
             <input type="text" id="edit-val" class="modal-input" placeholder="Value">
             
             <span class="modal-label">Time</span>
@@ -464,6 +392,7 @@
     let selectedDiaperType = 'Soft';
     let currentEditId = null;
     let isEditingNap = false;
+    let babyName = "BABY";
     
     // DEFINITIVE SORT ORDER
     const categoryOrder = { 
@@ -476,6 +405,7 @@
 
     window.onload = function() {
         loadData();
+        loadName();
         updateDateDisplay();
         setDefaultTimes();
         renderLogs();
@@ -498,89 +428,36 @@
         renderLogs();
     });
 
-    // Date navigation / picker (fixes desktop/PC calendar interaction)
-    const dateContainer = document.getElementById('date-container');
-    const prevDayBtn = document.getElementById('prev-day');
-    const nextDayBtn = document.getElementById('next-day');
-    const dateLabel = document.getElementById('date-label');
-
-    function openDatePicker() {
-        // Prefer native picker when available (Chrome/Edge desktop)
-        try {
-            if (datePicker.showPicker) {
-                datePicker.showPicker();
-                return;
-            }
-        } catch (e) {}
-
-        // Fallback: focus + click
-        try {
-            datePicker.focus({ preventScroll: true });
-            datePicker.click();
-            return;
-        } catch (e) {}
-
-        // Last resort: manual input
-        const manual = prompt("Enter date (YYYY-MM-DD):", datePicker.value);
-        if (manual && /^\d{4}-\d{2}-\d{2}$/.test(manual)) {
-            datePicker.value = manual;
-            datePicker.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-    }
-
-    function shiftDate(deltaDays) {
-        const d = new Date(currentDate);
-        d.setDate(d.getDate() + deltaDays);
-
-        // Prevent going into the future (keeps History clean)
-        const today = new Date();
-        if (d.toDateString() > today.toDateString()) return;
-
-        currentDate = d;
-        updateDateDisplay();
-        renderLogs();
-    }
-
-    function goToToday() {
-        currentDate = new Date();
-        updateDateDisplay();
-        renderLogs();
-    }
-
-    if (dateContainer) {
-        dateContainer.addEventListener('click', openDatePicker);
-        dateContainer.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                openDatePicker();
-            }
-        });
-    }
-
-    if (prevDayBtn) prevDayBtn.addEventListener('click', () => shiftDate(-1));
-    if (nextDayBtn) nextDayBtn.addEventListener('click', () => shiftDate(1));
-    if (dateLabel) dateLabel.addEventListener('click', goToToday);
-
-
     function updateDateDisplay() {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         document.getElementById('date-display').innerText = currentDate.toLocaleDateString('en-US', options);
-
+        
         const yyyy = currentDate.getFullYear();
         const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
         const dd = String(currentDate.getDate()).padStart(2, '0');
         datePicker.value = `${yyyy}-${mm}-${dd}`;
-
+        
         const today = new Date();
         const isToday = today.toDateString() === currentDate.toDateString();
-
         document.getElementById('date-label').innerText = isToday ? 'Today' : 'History';
+    }
 
-        const resetLink = document.querySelector('.reset-link');
-        if (resetLink) resetLink.innerText = isToday ? "Clear Only Today's Log" : "Clear This Date Log";
+    // --- NAME FUNCTIONS ---
+    function loadName() {
+        const storedName = localStorage.getItem('babyName');
+        if (storedName) {
+            babyName = storedName;
+        }
+        document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
+    }
 
-        const nextBtn = document.getElementById('next-day');
-        if (nextBtn) nextBtn.disabled = isToday;
+    function editName() {
+        let newName = prompt("Enter Baby's Name:", babyName);
+        if (newName && newName.trim() !== "") {
+            babyName = newName.trim();
+            localStorage.setItem('babyName', babyName);
+            document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
+        }
     }
 
     // --- ADD ACTIONS ---
@@ -606,12 +483,13 @@
         const end = document.getElementById('nap-end').value;
         if(!start || !end) return;
 
-        const m1 = timeToMinutes(start);
-        const m2 = timeToMinutes(end);
-        let diffMinsTotal = m2 - m1;
-        if (diffMinsTotal < 0) diffMinsTotal += 24 * 60;
-        const diffHrs = Math.floor(diffMinsTotal / 60);
-        const diffMins = diffMinsTotal % 60;
+        // Calculate duration just for UI display, NOT for report
+        const d1 = new Date("2000-01-01 " + start);
+        const d2 = new Date("2000-01-01 " + end);
+        let diffMs = d2 - d1;
+        if(diffMs < 0) diffMs += 24*60*60*1000;
+        const diffHrs = Math.floor(diffMs / 3600000);
+        const diffMins = Math.round(((diffMs % 3600000) / 60000));
         
         const durationStr = (diffHrs > 0 ? diffHrs + 'h ' : '') + diffMins + 'm';
         const displayVal = `Nap (${durationStr})`;
@@ -644,7 +522,7 @@
     function addEntry(type, value, detail, icon, color, timeStr, endTimeStr = null) {
         const entryDate = new Date(currentDate);
         const [hours, minutes] = timeStr.split(':');
-        entryDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+        entryDate.setHours(hours, minutes);
 
         const entry = {
             id: Date.now() + Math.random(),
@@ -674,7 +552,6 @@
         if(!entry) return;
         currentEditId = id;
         
-        // Check if NAP
         if (entry.type === 'Nap') {
             isEditingNap = true;
             document.getElementById('regular-edit-fields').style.display = 'none';
@@ -687,31 +564,8 @@
             isEditingNap = false;
             document.getElementById('regular-edit-fields').style.display = 'block';
             document.getElementById('nap-edit-fields').style.display = 'none';
-
-            const editVal = document.getElementById('edit-val');
-            const editValLabel = document.getElementById('edit-val-label');
-
-            // Formula: edit Quantity (oz) + Time (instead of the title)
-            if (entry.type === 'Formula') {
-                editVal.type = 'number';
-                editVal.inputMode = 'decimal';
-                editVal.step = '0.5';
-                editVal.placeholder = 'oz';
-
-                const qtyMatch = String(entry.detail || '').match(/[\d.]+/);
-                editVal.value = qtyMatch ? qtyMatch[0] : '';
-
-                if (editValLabel) editValLabel.textContent = 'Quantity (oz)';
-            } else {
-                editVal.type = 'text';
-                editVal.inputMode = 'text';
-                editVal.removeAttribute('step');
-                editVal.placeholder = 'Value';
-                editVal.value = entry.value;
-
-                if (editValLabel) editValLabel.textContent = 'Value';
-            }
-
+            
+            document.getElementById('edit-val').value = entry.value;
             document.getElementById('edit-time').value = entry.rawTime || "12:00";
         }
 
@@ -734,12 +588,12 @@
             const newEnd = document.getElementById('edit-nap-end').value;
             
             if (newStart && newEnd) {
-                const m1 = timeToMinutes(newStart);
-                const m2 = timeToMinutes(newEnd);
-                let diffMinsTotal = m2 - m1;
-                if (diffMinsTotal < 0) diffMinsTotal += 24 * 60;
-                const diffHrs = Math.floor(diffMinsTotal / 60);
-                const diffMins = diffMinsTotal % 60;
+                const d1 = new Date("2000-01-01 " + newStart);
+                const d2 = new Date("2000-01-01 " + newEnd);
+                let diffMs = d2 - d1;
+                if(diffMs < 0) diffMs += 24*60*60*1000;
+                const diffHrs = Math.floor(diffMs / 3600000);
+                const diffMins = Math.round(((diffMs % 3600000) / 60000));
                 
                 const durationStr = (diffHrs > 0 ? diffHrs + 'h ' : '') + diffMins + 'm';
                 
@@ -751,42 +605,27 @@
                 
                 const [hours, minutes] = newStart.split(':');
                 const newDate = new Date(logs[index].sortTime); 
-                newDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+                newDate.setHours(hours, minutes);
                 logs[index].sortTime = newDate.getTime();
             }
             
         } else {
             const newVal = document.getElementById('edit-val').value;
             const newTime = document.getElementById('edit-time').value;
-
-            // Allow "0" (number input) but block empty strings
-            if (newVal !== "" && newTime) {
-
-                // Formula: edit quantity (detail) + time (keep title as "Formula")
-                if (logs[index].type === 'Formula') {
-                    const qtyMatch = String(newVal).trim().match(/[\d.]+/);
-                    if (!qtyMatch) {
-                        alert("Please enter the formula quantity in oz.");
-                        return;
-                    }
-                    logs[index].value = 'Formula';
-                    logs[index].detail = `${qtyMatch[0]} oz`;
-                } else {
-                    logs[index].value = newVal;
-                }
-
+            
+            if (newVal && newTime) {
+                logs[index].value = newVal;
                 logs[index].rawTime = newTime;
                 logs[index].displayTime = convertTo12Hour(newTime);
-
+                
                 const [hours, minutes] = newTime.split(':');
                 const newDate = new Date(logs[index].sortTime); 
-                newDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+                newDate.setHours(hours, minutes);
                 logs[index].sortTime = newDate.getTime();
             }
         }
-
-
-saveData();
+        
+        saveData();
         renderLogs();
         closeEditModal();
     }
@@ -798,14 +637,6 @@ saveData();
             saveData();
             renderLogs();
         }
-    }
-
-    function timeToMinutes(t) {
-        if(!t) return 0;
-        const parts = t.split(':');
-        const hh = parseInt(parts[0] || '0', 10);
-        const mm = parseInt(parts[1] || '0', 10);
-        return (hh * 60) + mm;
     }
 
     function convertTo12Hour(time24) {
@@ -846,7 +677,6 @@ saveData();
             const displayTime = log.displayTime ? log.displayTime : '--:--';
             let displayValue = log.value.replace(/💩|💧/g, '').trim(); 
             
-            // Hide time for Food, Diapers AND Notes
             const showTime = (log.type !== 'Diapers' && log.type !== 'Note' && log.type !== 'Food');
 
             html += `
@@ -865,39 +695,37 @@ saveData();
         list.innerHTML = html;
     }
 
-    // --- REPORT GENERATION (CLEAN LAYOUT) ---
-    function buildReportText() {
+    // --- REPORT GENERATION ---
+    function generateReport() {
         let dayLogs = logs.filter(l => l.dateStr === currentDate.toDateString());
-
+        
         if(dayLogs.length === 0) {
             alert("No logs available to report for this day.");
-            return null;
+            return;
         }
 
         dayLogs = sortLogs(dayLogs);
 
         const dateStr = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-
-        let report = `DAILY BABY LOG REPORT\n`;
+        
+        // DYNAMIC HEADER
+        let report = `${babyName.toUpperCase()}'S DAILY REPORT\n`;
         report += `Date: ${dateStr}\n`;
         report += `----------------------------\n\n`;
-
+        
         dayLogs.forEach(log => {
             const time = log.displayTime || '--:--';
             let val = log.value.replace(/💩|💧/g, '').trim();
-
+            
             if (log.type === 'Formula') {
-                // Format: Icon Quantity [Time]
                 report += `🍼 ${log.detail} [${time}]\n`;
             } 
             else if (log.type === 'Food') {
-                // Format: Icon Quantity (No time)
                 report += `🍽️ ${val}\n`; 
             }
             else if (log.type === 'Nap') {
-                // Format: Icon Duration \n [Start - End]
-                const durationOnly = val.replace("Nap ", "");
-                report += `🛏️ ${durationOnly}\n   [${log.detail}]\n`; 
+                // CLEAN NAP FORMAT: Icon Start - End (No duration text in report)
+                report += `🛏️ ${log.detail}\n`; 
             }
             else if (log.type === 'Diapers') {
                 report += `💩 ${val}\n`;
@@ -906,23 +734,12 @@ saveData();
                 report += `📝 ${val}\n`;
             }
         });
-
+        
         report += `\n----------------------------\n`;
-        return report;
-    }
 
-    function tryCopyReport(report) {
-        // Clipboard works on HTTPS; ignore errors so it never breaks share flow
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(report).catch(() => {});
-        }
-    }
-
-    function sendTextReport() {
-        const report = buildReportText();
-        if (!report) return;
-
-        tryCopyReport(report);
+        navigator.clipboard.writeText(report).then(() => {
+            console.log("Copied");
+        }, () => {});
 
         const ua = navigator.userAgent.toLowerCase();
         const encodedReport = encodeURIComponent(report);
@@ -940,220 +757,7 @@ saveData();
         window.location.href = smsLink;
     }
 
-    function sendWhatsAppReport() {
-        const report = buildReportText();
-        if (!report) return;
-
-        tryCopyReport(report);
-
-        const encodedReport = encodeURIComponent(report);
-        const ua = navigator.userAgent.toLowerCase();
-
-        // Mobile: prefer deep link to WhatsApp app
-        if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1 || ua.indexOf("android") > -1) {
-            const deepLink = `whatsapp://send?text=${encodedReport}`;
-            window.location.href = deepLink;
-
-            // If WhatsApp isn't installed, user stays on page; provide web fallback
-            setTimeout(() => {
-                if (!document.hidden) {
-                    const webLink = `https://wa.me/?text=${encodedReport}`;
-                    window.open(webLink, '_blank');
-                }
-            }, 1200);
-
-            return;
-        }
-
-        // Desktop: WhatsApp Web
-        const webLink = `https://wa.me/?text=${encodedReport}`;
-        window.open(webLink, '_blank');
-    }
-
-    // Backward compatibility (older button/action)
-    function generateReport() {
-        sendTextReport();
-    }
-
-
-    // --- BACKUP / RESTORE (for moving data between iPhone/Android/PC) ---
-    function openDataModal() {
-        document.getElementById('data-modal').style.display = 'flex';
-    }
-
-    function closeDataModal() {
-        document.getElementById('data-modal').style.display = 'none';
-    }
-
-    function exportSelectedDay() {
-        const dayStr = currentDate.toDateString();
-        let dayLogs = logs.filter(l => l.dateStr === dayStr);
-        dayLogs = sortLogs(dayLogs);
-
-        if (dayLogs.length === 0) {
-            alert("No logs found for the selected day.");
-            return;
-        }
-
-        const pad = (n) => String(n).padStart(2, '0');
-        const d = new Date(currentDate);
-        const dateKey = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
-        const payload = {
-            version: 1,
-            scope: "day",
-            dateKey: dateKey,
-            exportedAt: new Date().toISOString(),
-            logs: dayLogs
-        };
-
-        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-
-        const now = new Date();
-        const fileName = `baby-log-${dateKey}-${pad(now.getHours())}${pad(now.getMinutes())}.json`;
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        alert(`Day exported (${dateKey}). Save the .json file to import on another device.`);
-    }
-
-    function exportData() {
-        const payload = {
-            version: 1,
-            exportedAt: new Date().toISOString(),
-            logs: logs
-        };
-
-        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-
-        const now = new Date();
-        const pad = (n) => String(n).padStart(2, '0');
-        const fileName = `baby-log-backup-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}.json`;
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        alert("Backup exported. Save the .json file to import on another device.");
-    }
-
-    function triggerImport() {
-        const input = document.getElementById('import-file');
-        input.value = '';
-        input.click();
-    }
-
-    function normalizeEntry(e) {
-        if (!e || typeof e !== 'object') return null;
-
-        // Support older field names (val vs value, time vs rawTime)
-        const type = e.type || e.category;
-        const value = (e.value !== undefined) ? e.value : (e.val !== undefined ? e.val : "");
-        const detail = (e.detail !== undefined) ? e.detail : (e.details !== undefined ? e.details : "");
-        const rawTime = e.rawTime || e.time || "";
-        const rawEndTime = e.rawEndTime || e.endTime || null;
-        const dateStr = e.dateStr || "";
-
-        if (!type || !rawTime || !dateStr) return null;
-
-        // Rebuild sortTime if missing
-        let sortTime = (typeof e.sortTime === 'number') ? e.sortTime : null;
-        if (!sortTime) {
-            // best-effort: parse from dateStr + rawTime (dateStr usually like "Wed Jan 14 2026")
-            const d = new Date(dateStr);
-            if (!isNaN(d.getTime()) && /^\d{2}:\d{2}$/.test(rawTime)) {
-                const [h, m] = rawTime.split(':').map(n => parseInt(n, 10));
-                d.setHours(h, m, 0, 0);
-                sortTime = d.getTime();
-            } else {
-                sortTime = Date.now();
-            }
-        }
-
-        return {
-            id: (typeof e.id === 'number') ? e.id : (Date.now() + Math.random()),
-            dateStr: dateStr,
-            sortTime: sortTime,
-            displayTime: e.displayTime || convertTo12Hour(rawTime),
-            rawTime: rawTime,
-            rawEndTime: rawEndTime,
-            type: type,
-            value: value,
-            detail: detail,
-            icon: e.icon || '•',
-            color: e.color || 'var(--ios-blue)'
-        };
-    }
-
-    function entryKey(e) {
-        return [
-            e.dateStr,
-            e.type,
-            e.rawTime,
-            e.rawEndTime || '',
-            String(e.value || ''),
-            String(e.detail || '')
-        ].join('|');
-    }
-
-    function mergeLogs(incoming) {
-        const existingKeys = new Set(logs.map(entryKey));
-        let added = 0;
-
-        incoming.forEach(raw => {
-            const n = normalizeEntry(raw);
-            if (!n) return;
-
-            const k = entryKey(n);
-            if (existingKeys.has(k)) return;
-
-            // Avoid id collisions
-            if (logs.some(x => x.id === n.id)) n.id = Date.now() + Math.random();
-
-            logs.push(n);
-            existingKeys.add(k);
-            added++;
-        });
-
-        return added;
-    }
-
-    document.getElementById('import-file').addEventListener('change', (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            try {
-                const parsed = JSON.parse(reader.result);
-                const incoming = Array.isArray(parsed) ? parsed : (parsed.logs || []);
-                if (!Array.isArray(incoming)) throw new Error("Invalid backup format.");
-
-                const added = mergeLogs(incoming);
-                saveData();
-                renderLogs();
-                alert(`Import completed: ${added} new entr${added === 1 ? 'y' : 'ies'} added.`);
-                closeDataModal();
-            } catch (err) {
-                alert("Import failed: " + (err && err.message ? err.message : String(err)));
-            }
-        };
-        reader.readAsText(file);
-    });
-
-function saveData() { localStorage.setItem('babyLogData', JSON.stringify(logs)); }
+    function saveData() { localStorage.setItem('babyLogData', JSON.stringify(logs)); }
     function loadData() {
         const data = localStorage.getItem('babyLogData');
         if(data) logs = JSON.parse(data);
