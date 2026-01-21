@@ -222,6 +222,7 @@
         <div class="app-name" onclick="editName()">
             <span id="baby-name-display">BABY</span> 
             <span style="font-size:12px; color: #8E8E93;">✏️</span>
+            <span style="font-size:11px; color:#8E8E93; margin-left:6px;">vNameSync</span>
         </div>
         <div id="connection-status">Connecting to Cloud...</div>
     </div>
@@ -341,6 +342,20 @@
     <div class="reset-link" onclick="clearDayData()">Clear Only Today's Log</div>
 </div>
 
+
+<div id="name-modal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-title">Baby Name</div>
+        <span class="modal-label">Name</span>
+        <input type="text" id="name-input" class="modal-input" placeholder="Enter baby's name">
+        <div class="modal-buttons">
+            <button class="modal-btn btn-cancel" onclick="closeNameModal()">Cancel</button>
+            <button class="modal-btn btn-save" onclick="saveName()">Save</button>
+        </div>
+    </div>
+</div>
+
+
 <div id="edit-modal" class="modal-overlay">
     <div class="modal-card">
         <div class="modal-title">Edit Entry</div>
@@ -364,6 +379,7 @@
 </div>
 
 <script>
+
     // --- FIREBASE CONFIGURATION ---
     // Added databaseURL for RTDB cross-device realtime sync (GitHub Pages / iOS / Android / PC)
     const firebaseConfig = {
@@ -528,18 +544,13 @@
     }
 
     function loadName() {
-        // Keep original local behavior first
         const storedName = localStorage.getItem('babyName');
         if (storedName) babyName = storedName;
-        document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
+        document.getElementById('baby-name-display').innerText = (babyName || "BABY").toUpperCase();
 
-        // NEW (requested): sync name via Firebase so it's the same on all devices
         if (!isFirebaseReady) return;
 
-        // Store inside baby_logs so it works even if your rules only allow baby_logs
         const nameRef = db.ref('baby_logs/__settings/babyName');
-
-        // Listen once and keep synced
         nameRef.on('value', (snap) => {
             const cloudName = snap.val();
             if (cloudName && typeof cloudName === 'string' && cloudName.trim() !== '') {
@@ -547,6 +558,11 @@
                 localStorage.setItem('babyName', babyName);
                 document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
             } else {
+                const local = localStorage.getItem('babyName');
+                if (local && local.trim() !== '') nameRef.set(local.trim());
+            }
+        });
+    } else {
                 // Seed cloud from local if cloud is empty
                 const local = localStorage.getItem('babyName');
                 if (local && local.trim() !== '') nameRef.set(local.trim());
@@ -555,17 +571,33 @@
     }
 
     function editName() {
-        // Keep original prompt UX
-        let newName = prompt("Enter Baby's Name:", babyName);
+        // Use modal instead of prompt (works reliably on iOS/Android/PC)
+        const modal = document.getElementById('name-modal');
+        const input = document.getElementById('name-input');
+        if (input) input.value = babyName || "";
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeNameModal() {
+        const modal = document.getElementById('name-modal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function saveName() {
+        const input = document.getElementById('name-input');
+        const newName = input ? input.value : "";
         if (newName && newName.trim() !== "") {
             babyName = newName.trim();
             localStorage.setItem('babyName', babyName);
             document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
 
-            // NEW (requested): push to cloud so every device updates
+            // Cloud sync so all devices match
             if (isFirebaseReady) {
                 db.ref('baby_logs/__settings/babyName').set(babyName);
             }
+        }
+        closeNameModal();
+    }
         }
     }
 }
@@ -824,27 +856,36 @@
         const dayLogs = sortLogs([...logs]);
         const dateStr = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
-        let report = `${babyName.toUpperCase()}'S DAILY REPORT\n`;
-        report += `${dateStr}\n\n`;
+        let report = `${babyName.toUpperCase()}'S DAILY REPORT
+`;
+        report += `${dateStr}
+
+`;
         dayLogs.forEach(log => {
             const time = log.displayTime || '--:--';
             let val = (log.value || '').toString().replace(/💩|💧/g, '').trim();
 
             if (log.type === 'Formula') {
-                report += `🍼 ${val} ${time}\n`;
+                report += `🍼 ${val} ${time}
+`;
             }
             else if (log.type === 'Food') {
-                report += `🍽️ ${val}\n`;
+                report += `🍽️ ${val}
+`;
             }
             else if (log.type === 'Nap') {
                 const durationOnly = val.replace("Nap ", "");
-                report += `🛏️${durationOnly}\n${log.detail}\n`;
+                report += `🛏️${durationOnly}
+${log.detail}
+`;
             }
             else if (log.type === 'Diapers') {
-                report += `💩 ${val}\n`;
+                report += `💩 ${val}
+`;
             }
             else if (log.type === 'Note') {
-                report += `📝 ${val}\n`;
+                report += `📝 ${val}
+`;
             }
         });
         navigator.clipboard.writeText(report).catch(err => console.log('Copy failed', err));
@@ -868,6 +909,20 @@
             window.location.href = smsLink;
         }
     }
+
+
+    // Fallback init (helps if window.onload is blocked by other scripts)
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            if (typeof loadName === 'function') loadName();
+            if (typeof updateDateDisplay === 'function') updateDateDisplay();
+            if (typeof setDefaultTimes === 'function') setDefaultTimes();
+            if (typeof listenToData === 'function') listenToData();
+        } catch (e) {
+            console.error("Init error:", e);
+        }
+    });
+
 </script>
 
 </body>
