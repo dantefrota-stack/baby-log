@@ -364,7 +364,7 @@
 </div>
 
 <script>
-    // --- FIREBASE CONFIGURATION ---
+    // --- FIREBASE CONFIGURATION (INTEGRADA) ---
     const firebaseConfig = {
         apiKey: "AIzaSyDiqYfep_8Myjo1oJ688hLx1UT2O1gzWyM",
         authDomain: "babylogapp-cb457.firebaseapp.com",
@@ -407,19 +407,19 @@
         listenToData();
     };
 
-    // --- TIMEZONE FIX: GET LOCAL DATE STRING (YYYY-MM-DD) ---
-    function getLocalDateString(dateObj) {
+    // --- TIMEZONE FIX: LOCAL DATE KEY ---
+    function getLocalDateKey(dateObj) {
         const year = dateObj.getFullYear();
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const day = String(dateObj.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     }
 
-    // --- FIREBASE SYNC (CLOUD ONLY SOURCE) ---
+    // --- FIREBASE LISTEN ---
     function listenToData() {
         if (!isFirebaseReady) return;
         
-        const dateKey = getLocalDateString(currentDate); // Using Local Date
+        const dateKey = getLocalDateKey(currentDate);
         const dbRef = db.ref('baby_logs/' + dateKey);
 
         document.getElementById('log-list').innerHTML = '<div class="empty-state">Loading logs...</div>';
@@ -432,27 +432,33 @@
                 logs = [];
             }
             renderLogs();
+        }, (error) => {
+            console.error("Read Error", error);
+            document.getElementById('log-list').innerHTML = '<div class="empty-state" style="color:red">Permission Denied. Check Rules.</div>';
         });
     }
 
+    // --- SAVE WITH ERROR CHECK ---
     function saveToCloud() {
         if (!isFirebaseReady) {
-            alert("Firebase Error.");
+            alert("Firebase not initialized.");
             return;
         }
-        const dateKey = getLocalDateString(currentDate); // Using Local Date
+        const dateKey = getLocalDateKey(currentDate);
         
         let updates = {};
         logs.forEach(log => {
             updates[log.id] = log;
         });
         
-        // Ensure node is either populated or removed
-        if (logs.length > 0) {
-            db.ref('baby_logs/' + dateKey).set(updates);
-        } else {
-            db.ref('baby_logs/' + dateKey).remove();
-        }
+        const ref = db.ref('baby_logs/' + dateKey);
+        
+        // Use Set (Overwrite day)
+        const promise = (logs.length > 0) ? ref.set(updates) : ref.remove();
+        
+        promise.catch((error) => {
+            alert("SAVE FAILED: Permission Denied.\n\nPlease check your Firebase Realtime Database Rules.\nThey should be 'read': true, 'write': true.");
+        });
     }
 
     function setDefaultTimes() {
@@ -471,8 +477,8 @@
         updateDateDisplay();
         
         if(isFirebaseReady) {
-            db.ref('baby_logs').off(); // Detach old
-            listenToData(); // Attach new
+            db.ref('baby_logs').off(); 
+            listenToData(); 
         } else {
             logs = [];
             renderLogs();
@@ -483,13 +489,11 @@
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         document.getElementById('date-display').innerText = currentDate.toLocaleDateString('en-US', options);
         
-        // Update picker to match current date
         const yyyy = currentDate.getFullYear();
         const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
         const dd = String(currentDate.getDate()).padStart(2, '0');
         datePicker.value = `${yyyy}-${mm}-${dd}`;
         
-        // Label logic
         const today = new Date();
         const isToday = today.toDateString() === currentDate.toDateString();
         document.getElementById('date-label').innerText = isToday ? 'Today' : 'History';
@@ -671,11 +675,11 @@
     
     function clearDayData() {
         if(confirm(`Clear logs for ${currentDate.toLocaleDateString()}?`)) {
-            const dateKey = getLocalDateString(currentDate);
+            const dateKey = getLocalDateKey(currentDate);
             if(isFirebaseReady) {
                 db.ref('baby_logs/' + dateKey).remove();
             }
-            logs = []; // UI clears instantly
+            logs = [];
             renderLogs();
         }
     }
@@ -755,7 +759,7 @@
                 report += `🍽️ ${val}\n`; 
             }
             else if (log.type === 'Nap') {
-                // FIXED NAP REPORT FORMAT: Icon(Duration) \n Range
+                // CORRECT NAP FORMAT
                 const durationOnly = val.replace("Nap ", ""); 
                 report += `🛏️${durationOnly}\n${log.detail}\n`; 
             }
