@@ -223,7 +223,7 @@
             <span id="baby-name-display">BABY</span> 
             <span style="font-size:12px; color: #8E8E93;">✏️</span>
         </div>
-        <div id="connection-status">Connecting to Cloud...</div>
+        <div id="connection-status">Connecting...</div>
     </div>
 
     <header>
@@ -323,7 +323,7 @@
     <div class="list-group">
         <div class="list-header">Daily Log</div>
         <div class="card" id="log-list">
-            <div class="empty-state">No entries yet.</div>
+            <div class="empty-state">Loading logs...</div>
         </div>
     </div>
 
@@ -364,7 +364,7 @@
 </div>
 
 <script>
-    // --- FIREBASE CONFIGURATION (INJECTED) ---
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyDiqYfep_8Myjo1oJ688hLx1UT2O1gzWyM",
         authDomain: "babylogapp-cb457.firebaseapp.com",
@@ -407,10 +407,22 @@
         listenToData();
     };
 
+    // --- TIMEZONE FIX: GET LOCAL DATE STRING (YYYY-MM-DD) ---
+    function getLocalDateString(dateObj) {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // --- FIREBASE SYNC (CLOUD ONLY SOURCE) ---
     function listenToData() {
         if (!isFirebaseReady) return;
-        const dateKey = currentDate.toISOString().split('T')[0];
+        
+        const dateKey = getLocalDateString(currentDate); // Using Local Date
         const dbRef = db.ref('baby_logs/' + dateKey);
+
+        document.getElementById('log-list').innerHTML = '<div class="empty-state">Loading logs...</div>';
 
         dbRef.on('value', (snapshot) => {
             const data = snapshot.val();
@@ -428,12 +440,19 @@
             alert("Firebase Error.");
             return;
         }
-        const dateKey = currentDate.toISOString().split('T')[0];
+        const dateKey = getLocalDateString(currentDate); // Using Local Date
+        
         let updates = {};
         logs.forEach(log => {
             updates[log.id] = log;
         });
-        db.ref('baby_logs/' + dateKey).set(updates);
+        
+        // Ensure node is either populated or removed
+        if (logs.length > 0) {
+            db.ref('baby_logs/' + dateKey).set(updates);
+        } else {
+            db.ref('baby_logs/' + dateKey).remove();
+        }
     }
 
     function setDefaultTimes() {
@@ -452,8 +471,8 @@
         updateDateDisplay();
         
         if(isFirebaseReady) {
-            db.ref('baby_logs').off(); 
-            listenToData(); 
+            db.ref('baby_logs').off(); // Detach old
+            listenToData(); // Attach new
         } else {
             logs = [];
             renderLogs();
@@ -464,11 +483,13 @@
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         document.getElementById('date-display').innerText = currentDate.toLocaleDateString('en-US', options);
         
+        // Update picker to match current date
         const yyyy = currentDate.getFullYear();
         const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
         const dd = String(currentDate.getDate()).padStart(2, '0');
         datePicker.value = `${yyyy}-${mm}-${dd}`;
         
+        // Label logic
         const today = new Date();
         const isToday = today.toDateString() === currentDate.toDateString();
         document.getElementById('date-label').innerText = isToday ? 'Today' : 'History';
@@ -564,7 +585,6 @@
         };
         logs.push(entry);
         saveToCloud();
-        renderLogs();
     }
 
     // --- EDIT & DELETE ---
@@ -572,7 +592,6 @@
         if(confirm("Delete this entry?")) {
             logs = logs.filter(item => item.id != id);
             saveToCloud();
-            renderLogs();
         }
     }
 
@@ -647,17 +666,16 @@
         }
         
         saveToCloud();
-        renderLogs();
         closeEditModal();
     }
     
     function clearDayData() {
         if(confirm(`Clear logs for ${currentDate.toLocaleDateString()}?`)) {
-            const dateKey = currentDate.toISOString().split('T')[0];
+            const dateKey = getLocalDateString(currentDate);
             if(isFirebaseReady) {
                 db.ref('baby_logs/' + dateKey).remove();
             }
-            logs = [];
+            logs = []; // UI clears instantly
             renderLogs();
         }
     }
@@ -731,14 +749,13 @@
             let val = log.value.replace(/💩|💧/g, '').trim();
             
             if (log.type === 'Formula') {
-                // FIXED FORMULA: removed brackets
-                report += `🍼 ${log.detail} ${time}\n`;
+                report += `🍼 ${log.detail} ${time}\n`; // No brackets
             } 
             else if (log.type === 'Food') {
                 report += `🍽️ ${val}\n`; 
             }
             else if (log.type === 'Nap') {
-                // FIXED NAP REPORT FORMAT
+                // FIXED NAP REPORT FORMAT: Icon(Duration) \n Range
                 const durationOnly = val.replace("Nap ", ""); 
                 report += `🛏️${durationOnly}\n${log.detail}\n`; 
             }
@@ -767,7 +784,7 @@
             } else if (ua.indexOf("android") > -1) {
                 smsLink = `sms:?body=${encodedReport}`;
             } else {
-                alert("Report copied to clipboard! Paste into your message app.");
+                alert("Report copied to clipboard!");
                 return;
             }
             window.location.href = smsLink;
