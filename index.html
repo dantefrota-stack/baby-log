@@ -578,11 +578,6 @@
         addEntry('Formula', 'Formula', val + ' oz', '🍼', 'var(--ios-blue)', timeVal);
         document.getElementById('formula-input').value = '';
     }
-
-oz`, '', '🍼', 'var(--ios-blue)', timeVal);
-        document.getElementById('formula-input').value = '';
-    }
-
     function addFood() {
         const val = document.getElementById('food-input').value;
         const now = new Date();
@@ -830,10 +825,7 @@ oz`, '', '🍼', 'var(--ios-blue)', timeVal);
         const dateStr = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
         let report = `${babyName.toUpperCase()}'S DAILY REPORT\n`;
-        report += `${dateStr}
-`;
-        report += `
-`;
+        report += `${dateStr}\n\n`;
         dayLogs.forEach(log => {
             const time = log.displayTime || '--:--';
             let val = (log.value || '').toString().replace(/💩|💧/g, '').trim();
