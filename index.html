@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Baby Log</title>
+    <title>Baby Log Cloud</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         :root {
             --ios-bg: #F2F2F7;
             --ios-card: #FFFFFF;
             --ios-blue: #007AFF;
-            --ios-green: #34C759;
+            --ios-green: #34C759; /* WhatsApp Green */
             --ios-orange: #FF9500;
             --ios-purple: #5856D6;
             --ios-indigo: #5E5CE6;
@@ -37,10 +41,10 @@
             min-height: 100vh;
             border-left: 1px solid #ddd;
             border-right: 1px solid #ddd;
-            padding-bottom: 180px;
+            padding-bottom: 200px; /* Space for dual buttons */
         }
 
-        /* Top Title Bar (Baby Name) */
+        /* Top Nav: Baby Name */
         .top-nav {
             background-color: rgba(242, 242, 247, 0.98);
             padding: 10px 20px 5px 20px;
@@ -88,8 +92,7 @@
         }
 
         input[type="date"] {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0; cursor: pointer; z-index: 10;
         }
 
@@ -99,62 +102,40 @@
 
         /* Lists & Cards */
         .list-group { margin: 24px 16px; }
-        
         .list-header {
-            text-transform: uppercase;
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--ios-dark-gray);
-            margin-bottom: 10px;
-            margin-left: 16px;
-            letter-spacing: 0.5px;
+            text-transform: uppercase; font-size: 15px; font-weight: 700;
+            color: var(--ios-dark-gray); margin-bottom: 10px; margin-left: 16px; letter-spacing: 0.5px;
         }
-        
         .card {
-            background-color: var(--ios-card);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background-color: var(--ios-card); border-radius: 12px;
+            overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        
         .list-item {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 0.5px solid var(--ios-separator);
-            padding-right: 12px; 
+            display: flex; align-items: center; padding: 16px;
+            border-bottom: 0.5px solid var(--ios-separator); padding-right: 12px; 
         }
         .list-item:last-child { border-bottom: none; }
-        
         .icon-box { 
             width: 34px; font-size: 28px; margin-right: 14px; text-align: center; flex-shrink: 0; margin-top: 2px;
         }
 
-        /* Inputs & Flex Fixes */
-        .input-row {
-            display: flex; flex: 1; justify-content: space-between; align-items: center; gap: 10px; min-width: 0; 
-        }
-
+        /* Inputs */
+        .input-row { display: flex; flex: 1; justify-content: space-between; align-items: center; gap: 10px; min-width: 0; }
         input[type="text"], input[type="number"] {
             border: none; font-size: 20px; font-weight: 500; flex: 1; outline: none; padding: 5px 0; min-width: 50px; background: transparent; color: #000;
         }
         ::placeholder { color: #C7C7CC; font-weight: 400; }
-
         .time-wrapper {
             background-color: #E5E5EA; border-radius: 8px; padding: 6px 8px; display: flex; align-items: center; flex-shrink: 0; 
         }
-        
         input[type="time"] {
             border: none; background: transparent; font-family: inherit; font-size: 16px; font-weight: 600; color: var(--ios-blue); outline: none; cursor: pointer;
         }
-
         .add-btn {
             background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; margin-left: 8px;
         }
-        
         .add-circle {
             width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 24px; line-height: 30px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            /* Background set inline */
         }
 
         /* Diaper Control */
@@ -164,40 +145,44 @@
         .segment-opt {
             flex: 1; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 8px;
         }
-        .segment-opt.active {
-            background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .segment-opt.active { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .full-btn {
             width: 100%; padding: 14px; background-color: rgba(255, 149, 0, 0.15); color: var(--ios-orange); border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
         /* LOGS */
-        .log-entry {
-            display: flex; align-items: flex-start; padding: 16px; border-bottom: 0.5px solid var(--ios-separator);
-        }
+        .log-entry { display: flex; align-items: flex-start; padding: 16px; border-bottom: 0.5px solid var(--ios-separator); }
         .log-content { flex: 1; display: flex; flex-direction: column; padding-right: 10px; min-width: 0; }
-        
         .log-title { 
             font-size: 19px; font-weight: 600; white-space: normal; word-wrap: break-word; line-height: 1.4; margin-bottom: 4px;
         }
-        
         .log-sub { font-size: 15px; color: var(--ios-gray); }
         .log-time { font-size: 15px; font-weight: 500; color: var(--ios-gray); margin-right: 12px; white-space: nowrap; margin-top: 4px; }
-        
-        .action-btn {
-            background: none; border: none; cursor: pointer; font-size: 22px; padding: 4px 8px; opacity: 0.7; margin-top: -2px;
-        }
-        .action-btn:hover { opacity: 1; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 22px; padding: 4px 8px; opacity: 0.7; margin-top: -2px; }
         .edit-btn { color: var(--ios-blue); margin-right: 5px; }
         .delete-btn { color: var(--ios-red); }
 
-        /* Bottom Action */
+        /* Bottom Action - DUAL BUTTONS */
         .bottom-action {
-            position: fixed; bottom: 0; width: 100%; max-width: 450px; padding: 20px; background: rgba(242, 242, 247, 0.98); backdrop-filter: blur(10px); box-sizing: border-box; border-top: 1px solid rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 12px;
+            position: fixed; bottom: 0; width: 100%; max-width: 450px; padding: 20px;
+            background: rgba(242, 242, 247, 0.98); backdrop-filter: blur(10px);
+            box-sizing: border-box; border-top: 1px solid rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; gap: 10px;
         }
+        
+        .share-row {
+            display: flex; gap: 10px; width: 100%;
+        }
+
         .share-btn {
-            width: 100%; background-color: #000; color: white; padding: 18px; border-radius: 14px; border: none; font-size: 19px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            flex: 1;
+            padding: 16px; border-radius: 14px; border: none; font-size: 17px; font-weight: 700; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); color: white;
         }
+        
+        .btn-text { background-color: #000000; }
+        .btn-whatsapp { background-color: #25D366; } /* WhatsApp Brand Color */
         
         .reset-link {
             text-align: center; color: var(--ios-red); font-size: 15px; font-weight: 500; text-decoration: none; margin-top: 5px; cursor: pointer; padding: 10px;
@@ -210,30 +195,20 @@
         .indigo-icon { color: var(--ios-indigo); }
 
         /* MODAL */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px);
-        }
-        .modal-card {
-            background: white; width: 85%; max-width: 350px; border-radius: 16px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-card { background: white; width: 85%; max-width: 350px; border-radius: 16px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
         .modal-title { font-weight: 700; font-size: 20px; margin-bottom: 20px; }
-        
-        .modal-input {
-            width: 100%; padding: 14px; background: #F2F2F7; border: none; border-radius: 10px; margin-bottom: 15px; font-size: 18px; box-sizing: border-box;
-        }
-        
-        .modal-label {
-            display: block; text-align: left; font-size: 14px; color: var(--ios-gray); margin-bottom: 5px; margin-left: 5px; font-weight: 600;
-        }
-
-        .modal-buttons {
-            display: flex; justify-content: space-between; margin-top: 10px; gap: 15px;
-        }
-        .modal-btn {
-            flex: 1; padding: 14px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 17px;
-        }
+        .modal-input { width: 100%; padding: 14px; background: #F2F2F7; border: none; border-radius: 10px; margin-bottom: 15px; font-size: 18px; box-sizing: border-box; }
+        .modal-label { display: block; text-align: left; font-size: 14px; color: var(--ios-gray); margin-bottom: 5px; margin-left: 5px; font-weight: 600; }
+        .modal-buttons { display: flex; justify-content: space-between; margin-top: 10px; gap: 15px; }
+        .modal-btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; font-size: 17px; }
         .btn-cancel { background: #E5E5EA; color: #000; }
         .btn-save { background: var(--ios-blue); color: #fff; }
+
+        /* Connection Status */
+        #connection-status {
+            font-size: 12px; color: #8E8E93; margin-top: 5px;
+        }
 
     </style>
 </head>
@@ -246,6 +221,7 @@
             <span id="baby-name-display">BABY</span> 
             <span style="font-size:12px; color: #8E8E93;">✏️</span>
         </div>
+        <div id="connection-status">Connecting to Cloud...</div>
     </div>
 
     <header>
@@ -352,32 +328,32 @@
 </div>
 
 <div class="bottom-action">
-    <button class="share-btn" onclick="generateReport()">
-        <span>💬</span> Send Text Report
-    </button>
+    <div class="share-row">
+        <button class="share-btn btn-text" onclick="generateReport('text')">
+            <span>💬</span> Text
+        </button>
+        <button class="share-btn btn-whatsapp" onclick="generateReport('whatsapp')">
+            <span>📞</span> WhatsApp
+        </button>
+    </div>
     <div class="reset-link" onclick="clearDayData()">Clear Only Today's Log</div>
 </div>
 
 <div id="edit-modal" class="modal-overlay">
     <div class="modal-card">
         <div class="modal-title">Edit Entry</div>
-        
         <div id="regular-edit-fields">
             <span class="modal-label">Value</span>
             <input type="text" id="edit-val" class="modal-input" placeholder="Value">
-            
             <span class="modal-label">Time</span>
             <input type="time" id="edit-time" class="modal-input">
         </div>
-
         <div id="nap-edit-fields" style="display:none;">
             <span class="modal-label">Start Time</span>
             <input type="time" id="edit-nap-start" class="modal-input">
-            
             <span class="modal-label">End Time</span>
             <input type="time" id="edit-nap-end" class="modal-input">
         </div>
-
         <div class="modal-buttons">
             <button class="modal-btn btn-cancel" onclick="closeEditModal()">Cancel</button>
             <button class="modal-btn btn-save" onclick="saveEdit()">Save</button>
@@ -386,6 +362,34 @@
 </div>
 
 <script>
+    // --- FIREBASE CREDENTIALS (INJECTED) ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyDiqYfep_8Myjo1oJ688hLx1UT2O1gzWyM",
+        authDomain: "babylogapp-cb457.firebaseapp.com",
+        projectId: "babylogapp-cb457",
+        storageBucket: "babylogapp-cb457.firebasestorage.app",
+        messagingSenderId: "436304963218",
+        appId: "1:436304963218:web:18767942ac7570192e684b",
+        measurementId: "G-8BQD5J0PZ8"
+    };
+    // ------------------------------------------------
+
+    // Initialize Firebase
+    let db;
+    let isFirebaseReady = false;
+
+    try {
+        if (firebase.apps.length === 0) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.database();
+        isFirebaseReady = true;
+        document.getElementById('connection-status').innerText = "Cloud Connected ✅";
+    } catch (e) {
+        console.error("Firebase Error", e);
+        document.getElementById('connection-status').innerText = "Cloud Error ❌";
+    }
+
     // State
     let currentDate = new Date();
     let logs = []; 
@@ -394,22 +398,50 @@
     let isEditingNap = false;
     let babyName = "BABY";
     
-    // DEFINITIVE SORT ORDER
-    const categoryOrder = { 
-        'Formula': 1, 
-        'Food': 2, 
-        'Nap': 3, 
-        'Diapers': 4,
-        'Note': 5 
-    };
+    const categoryOrder = { 'Formula': 1, 'Food': 2, 'Nap': 3, 'Diapers': 4, 'Note': 5 };
 
     window.onload = function() {
-        loadData();
         loadName();
         updateDateDisplay();
         setDefaultTimes();
-        renderLogs();
+        listenToData(); // Start Firebase Listener
     };
+
+    // --- FIREBASE SYNC FUNCTIONS ---
+    function listenToData() {
+        if (!isFirebaseReady) return;
+        
+        // Date Key format: YYYY-MM-DD
+        const dateKey = currentDate.toISOString().split('T')[0];
+        const dbRef = db.ref('baby_logs/' + dateKey);
+
+        dbRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                logs = Object.values(data);
+            } else {
+                logs = [];
+            }
+            renderLogs();
+        });
+    }
+
+    function saveToCloud() {
+        if (!isFirebaseReady) {
+            alert("Firebase not configured! Data will not save.");
+            return;
+        }
+        const dateKey = currentDate.toISOString().split('T')[0];
+        
+        // Firebase needs object/dictionary, not array
+        let updates = {};
+        logs.forEach(log => {
+            updates[log.id] = log;
+        });
+        
+        // Replace entire node for this date
+        db.ref('baby_logs/' + dateKey).set(updates);
+    }
 
     function setDefaultTimes() {
         const now = new Date();
@@ -425,7 +457,15 @@
         const [year, month, day] = e.target.value.split('-');
         currentDate = new Date(year, month - 1, day);
         updateDateDisplay();
-        renderLogs();
+        
+        // Switch Firebase Listener to new date
+        if(isFirebaseReady) {
+            db.ref('baby_logs').off(); // Detach old listeners
+            listenToData(); // Attach new
+        } else {
+            logs = []; // Reset if no db
+            renderLogs();
+        }
     });
 
     function updateDateDisplay() {
@@ -442,12 +482,10 @@
         document.getElementById('date-label').innerText = isToday ? 'Today' : 'History';
     }
 
-    // --- NAME FUNCTIONS ---
+    // --- NAME FUNCTIONS (Local only for preference) ---
     function loadName() {
         const storedName = localStorage.getItem('babyName');
-        if (storedName) {
-            babyName = storedName;
-        }
+        if (storedName) babyName = storedName;
         document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
     }
 
@@ -483,16 +521,17 @@
         const end = document.getElementById('nap-end').value;
         if(!start || !end) return;
 
-        // Calculate duration just for UI display, NOT for report
+        // Calc Duration for Display
         const d1 = new Date("2000-01-01 " + start);
         const d2 = new Date("2000-01-01 " + end);
         let diffMs = d2 - d1;
         if(diffMs < 0) diffMs += 24*60*60*1000;
         const diffHrs = Math.floor(diffMs / 3600000);
         const diffMins = Math.round(((diffMs % 3600000) / 60000));
-        
         const durationStr = (diffHrs > 0 ? diffHrs + 'h ' : '') + diffMins + 'm';
+        
         const displayVal = `Nap (${durationStr})`;
+        // Only format Start - End for Display on UI
         const detailVal = `${convertTo12Hour(start)} - ${convertTo12Hour(end)}`;
 
         addEntry('Nap', displayVal, detailVal, '🛏️', 'var(--ios-indigo)', start, end);
@@ -525,7 +564,7 @@
         entryDate.setHours(hours, minutes);
 
         const entry = {
-            id: Date.now() + Math.random(),
+            id: Date.now().toString(), // String ID is better for Firebase
             dateStr: currentDate.toDateString(),
             sortTime: entryDate.getTime(),
             displayTime: convertTo12Hour(timeStr),
@@ -534,7 +573,7 @@
             type, value, detail, icon, color
         };
         logs.push(entry);
-        saveData();
+        saveToCloud(); // Save immediately
         renderLogs();
     }
 
@@ -542,13 +581,14 @@
     function deleteEntry(id) {
         if(confirm("Delete this entry?")) {
             logs = logs.filter(item => item.id !== id);
-            saveData();
+            saveToCloud();
             renderLogs();
         }
     }
 
     function editEntry(id) {
-        const entry = logs.find(item => item.id === id);
+        // ID in Firebase might be string
+        const entry = logs.find(item => item.id == id);
         if(!entry) return;
         currentEditId = id;
         
@@ -556,19 +596,15 @@
             isEditingNap = true;
             document.getElementById('regular-edit-fields').style.display = 'none';
             document.getElementById('nap-edit-fields').style.display = 'block';
-            
             document.getElementById('edit-nap-start').value = entry.rawTime || "12:00";
             document.getElementById('edit-nap-end').value = entry.rawEndTime || "13:00";
-            
         } else {
             isEditingNap = false;
             document.getElementById('regular-edit-fields').style.display = 'block';
             document.getElementById('nap-edit-fields').style.display = 'none';
-            
             document.getElementById('edit-val').value = entry.value;
             document.getElementById('edit-time').value = entry.rawTime || "12:00";
         }
-
         document.getElementById('edit-modal').style.display = 'flex';
     }
 
@@ -579,8 +615,7 @@
 
     function saveEdit() {
         if(!currentEditId) return;
-        
-        const index = logs.findIndex(l => l.id === currentEditId);
+        const index = logs.findIndex(l => l.id == currentEditId);
         if(index === -1) return;
 
         if (isEditingNap) {
@@ -594,7 +629,6 @@
                 if(diffMs < 0) diffMs += 24*60*60*1000;
                 const diffHrs = Math.floor(diffMs / 3600000);
                 const diffMins = Math.round(((diffMs % 3600000) / 60000));
-                
                 const durationStr = (diffHrs > 0 ? diffHrs + 'h ' : '') + diffMins + 'm';
                 
                 logs[index].value = `Nap (${durationStr})`;
@@ -608,11 +642,9 @@
                 newDate.setHours(hours, minutes);
                 logs[index].sortTime = newDate.getTime();
             }
-            
         } else {
             const newVal = document.getElementById('edit-val').value;
             const newTime = document.getElementById('edit-time').value;
-            
             if (newVal && newTime) {
                 logs[index].value = newVal;
                 logs[index].rawTime = newTime;
@@ -625,16 +657,19 @@
             }
         }
         
-        saveData();
+        saveToCloud();
         renderLogs();
         closeEditModal();
     }
     
     function clearDayData() {
-        if(confirm(`Are you sure you want to clear logs for ${currentDate.toLocaleDateString()}?`)) {
-            const targetDateStr = currentDate.toDateString();
-            logs = logs.filter(l => l.dateStr !== targetDateStr);
-            saveData();
+        if(confirm(`Clear logs for ${currentDate.toLocaleDateString()}?`)) {
+            // In firebase: just set the node to null
+            const dateKey = currentDate.toISOString().split('T')[0];
+            if(isFirebaseReady) {
+                db.ref('baby_logs/' + dateKey).remove();
+            }
+            logs = [];
             renderLogs();
         }
     }
@@ -653,18 +688,15 @@
         return items.sort((a, b) => {
             const orderA = categoryOrder[a.type] || 99;
             const orderB = categoryOrder[b.type] || 99;
-            
-            if (orderA !== orderB) {
-                return orderA - orderB; 
-            } else {
-                return a.sortTime - b.sortTime; 
-            }
+            if (orderA !== orderB) return orderA - orderB; 
+            return a.sortTime - b.sortTime; 
         });
     }
 
     function renderLogs() {
         const list = document.getElementById('log-list');
-        let dayLogs = logs.filter(l => l.dateStr === currentDate.toDateString());
+        // Firebase updates 'logs' directly, but we need to ensure we only show selected date
+        let dayLogs = [...logs]; // copy
         dayLogs = sortLogs(dayLogs);
 
         if(dayLogs.length === 0) {
@@ -676,7 +708,6 @@
         dayLogs.forEach(log => {
             const displayTime = log.displayTime ? log.displayTime : '--:--';
             let displayValue = log.value.replace(/💩|💧/g, '').trim(); 
-            
             const showTime = (log.type !== 'Diapers' && log.type !== 'Note' && log.type !== 'Food');
 
             html += `
@@ -687,28 +718,24 @@
                     ${log.detail ? `<div class="log-sub">${log.detail}</div>` : ''}
                 </div>
                 <div class="log-time">${showTime ? displayTime : ''}</div>
-                <button class="action-btn edit-btn" onclick="editEntry(${log.id})" title="Edit">✏️</button>
-                <button class="action-btn delete-btn" onclick="deleteEntry(${log.id})" title="Delete">🗑️</button>
+                <button class="action-btn edit-btn" onclick="editEntry('${log.id}')" title="Edit">✏️</button>
+                <button class="action-btn delete-btn" onclick="deleteEntry('${log.id}')" title="Delete">🗑️</button>
             </div>
             `;
         });
         list.innerHTML = html;
     }
 
-    // --- REPORT GENERATION ---
-    function generateReport() {
-        let dayLogs = logs.filter(l => l.dateStr === currentDate.toDateString());
-        
-        if(dayLogs.length === 0) {
-            alert("No logs available to report for this day.");
+    // --- GENERATE REPORT (Mode: 'text' or 'whatsapp') ---
+    function generateReport(mode) {
+        if(logs.length === 0) {
+            alert("No logs to report.");
             return;
         }
 
-        dayLogs = sortLogs(dayLogs);
-
+        const dayLogs = sortLogs([...logs]);
         const dateStr = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
         
-        // DYNAMIC HEADER
         let report = `${babyName.toUpperCase()}'S DAILY REPORT\n`;
         report += `Date: ${dateStr}\n`;
         report += `----------------------------\n\n`;
@@ -724,7 +751,7 @@
                 report += `🍽️ ${val}\n`; 
             }
             else if (log.type === 'Nap') {
-                // CLEAN NAP FORMAT: Icon Start - End (No duration text in report)
+                // FIXED NAP FORMAT: Icon Time - Time (Single Line)
                 report += `🛏️ ${log.detail}\n`; 
             }
             else if (log.type === 'Diapers') {
@@ -737,30 +764,30 @@
         
         report += `\n----------------------------\n`;
 
-        navigator.clipboard.writeText(report).then(() => {
-            console.log("Copied");
-        }, () => {});
+        // 1. Copy to Clipboard (Fallback)
+        navigator.clipboard.writeText(report).catch(err => console.log('Copy failed', err));
 
-        const ua = navigator.userAgent.toLowerCase();
+        // 2. Open Specific App
         const encodedReport = encodeURIComponent(report);
-        let smsLink = "";
-
-        if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
-            smsLink = `sms:&body=${encodedReport}`;
-        } else if (ua.indexOf("android") > -1) {
-            smsLink = `sms:?body=${encodedReport}`;
-        } else {
-            alert("REPORT COPIED!\n\nPaste into message.\n\n" + report);
-            return;
+        const ua = navigator.userAgent.toLowerCase();
+        
+        if (mode === 'whatsapp') {
+            // Universal WhatsApp Link
+            window.open(`https://wa.me/?text=${encodedReport}`, '_blank');
+        } 
+        else if (mode === 'text') {
+            // SMS Logic
+            let smsLink = "";
+            if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
+                smsLink = `sms:&body=${encodedReport}`;
+            } else if (ua.indexOf("android") > -1) {
+                smsLink = `sms:?body=${encodedReport}`;
+            } else {
+                alert("Text feature works best on phones. Report copied to clipboard!");
+                return;
+            }
+            window.location.href = smsLink;
         }
-
-        window.location.href = smsLink;
-    }
-
-    function saveData() { localStorage.setItem('babyLogData', JSON.stringify(logs)); }
-    function loadData() {
-        const data = localStorage.getItem('babyLogData');
-        if(data) logs = JSON.parse(data);
     }
 </script>
 
