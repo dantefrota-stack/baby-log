@@ -41,7 +41,7 @@
             min-height: 100vh;
             border-left: 1px solid #ddd;
             border-right: 1px solid #ddd;
-            padding-bottom: 200px;
+            padding-bottom: 220px;
         }
 
         /* Top Nav */
@@ -60,6 +60,13 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
+        }
+
+        #connection-status {
+            font-size: 11px;
+            color: #8E8E93;
+            margin-top: 4px;
+            font-weight: 500;
         }
 
         /* Header */
@@ -101,49 +108,62 @@
         }
 
         /* Lists & Cards */
-        .list-group { margin: 24px 16px; }
+        .list-group { margin: 20px 16px; }
         .list-header {
-            text-transform: uppercase; font-size: 15px; font-weight: 700;
-            color: var(--ios-dark-gray); margin-bottom: 10px; margin-left: 16px; letter-spacing: 0.5px;
+            text-transform: uppercase; font-size: 14px; font-weight: 700;
+            color: var(--ios-dark-gray); margin-bottom: 8px; margin-left: 16px; letter-spacing: 0.5px;
         }
         .card {
             background-color: var(--ios-card); border-radius: 12px;
             overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .list-item {
-            display: flex; align-items: center; padding: 16px;
-            border-bottom: 0.5px solid var(--ios-separator); padding-right: 12px; 
+            display: flex; align-items: center; padding: 12px 16px;
+            border-bottom: 0.5px solid var(--ios-separator); 
         }
         .list-item:last-child { border-bottom: none; }
         .icon-box { 
-            width: 34px; font-size: 28px; margin-right: 14px; text-align: center; flex-shrink: 0; margin-top: 2px;
+            width: 30px; font-size: 26px; margin-right: 12px; text-align: center; flex-shrink: 0; 
         }
 
-        /* Inputs */
+        /* Inputs - IMPROVED LAYOUT FOR SMALL SCREENS */
         .input-row { 
-            display: flex; flex: 1; justify-content: space-between; align-items: center; gap: 8px; min-width: 0; 
+            display: flex; flex: 1; 
+            align-items: center; 
+            gap: 8px; 
+            min-width: 0; /* Prevents overflow */
         }
         
         input[type="text"], input[type="number"] {
-            border: none; font-size: 20px; font-weight: 500; flex: 1; outline: none; padding: 5px 0; min-width: 50px; background: transparent; color: #000;
+            border: none; font-size: 18px; font-weight: 500; flex: 1; outline: none; padding: 5px 0; 
+            min-width: 40px; /* Allow shrinking */
+            background: transparent; color: #000;
         }
         ::placeholder { color: #C7C7CC; font-weight: 400; }
 
+        /* TIME WRAPPER FIX: Allow shrinking so button stays */
         .time-wrapper {
             background-color: #E5E5EA; 
             border-radius: 8px; 
             padding: 6px 4px; 
             display: flex; 
             align-items: center; 
+            flex-shrink: 1; /* Allow shrinking */
+            min-width: 85px; /* Minimum legible width */
+            justify-content: center;
         }
         
         input[type="time"] {
-            border: none; background: transparent; font-family: inherit; font-size: 16px; font-weight: 600; color: var(--ios-blue); outline: none; cursor: pointer;
-            width: 100%;
+            border: none; background: transparent; font-family: inherit; font-size: 15px; font-weight: 600; color: var(--ios-blue); outline: none; cursor: pointer;
+            width: 100%; text-align: center;
         }
 
         .add-btn {
-            background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; margin-left: 5px;
+            background: none; border: none; cursor: pointer; padding: 0; 
+            flex-shrink: 0; /* NEVER SHRINK BUTTON */
+            width: 36px; height: 36px; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-left: 4px;
         }
         .add-circle {
             width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 24px; line-height: 30px; text-align: center; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -151,38 +171,38 @@
 
         /* Diaper Control */
         .segmented-control {
-            display: flex; background-color: #E5E5EA; padding: 3px; border-radius: 10px; width: 100%; margin-bottom: 14px; height: 44px;
+            display: flex; background-color: #E5E5EA; padding: 3px; border-radius: 10px; width: 100%; margin-bottom: 12px; height: 40px;
         }
         .segment-opt {
-            flex: 1; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 8px;
+            flex: 1; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; cursor: pointer; border-radius: 8px;
         }
         .segment-opt.active { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .full-btn {
-            width: 100%; padding: 14px; background-color: rgba(255, 149, 0, 0.15); color: var(--ios-orange); border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 12px; background-color: rgba(255, 149, 0, 0.15); color: var(--ios-orange); border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
         /* LOGS */
-        .log-entry { display: flex; align-items: flex-start; padding: 16px; border-bottom: 0.5px solid var(--ios-separator); }
+        .log-entry { display: flex; align-items: flex-start; padding: 14px 16px; border-bottom: 0.5px solid var(--ios-separator); }
         .log-content { flex: 1; display: flex; flex-direction: column; padding-right: 10px; min-width: 0; }
         .log-title { 
-            font-size: 19px; font-weight: 600; white-space: normal; word-wrap: break-word; line-height: 1.4; margin-bottom: 4px;
+            font-size: 18px; font-weight: 600; white-space: normal; word-wrap: break-word; line-height: 1.3; margin-bottom: 2px;
         }
-        .log-sub { font-size: 15px; color: var(--ios-gray); }
-        .log-time { font-size: 15px; font-weight: 500; color: var(--ios-gray); margin-right: 12px; white-space: nowrap; margin-top: 4px; }
-        .action-btn { background: none; border: none; cursor: pointer; font-size: 22px; padding: 4px 8px; opacity: 0.7; margin-top: -2px; }
-        .edit-btn { color: var(--ios-blue); margin-right: 5px; }
+        .log-sub { font-size: 14px; color: var(--ios-gray); }
+        .log-time { font-size: 14px; font-weight: 500; color: var(--ios-gray); margin-right: 10px; white-space: nowrap; margin-top: 3px; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 20px; padding: 4px 6px; opacity: 0.7; margin-top: -2px; }
+        .edit-btn { color: var(--ios-blue); margin-right: 2px; }
         .delete-btn { color: var(--ios-red); }
 
         /* Bottom Action */
         .bottom-action {
-            position: fixed; bottom: 0; width: 100%; max-width: 450px; padding: 20px;
+            position: fixed; bottom: 0; width: 100%; max-width: 450px; padding: 16px;
             background: rgba(242, 242, 247, 0.98); backdrop-filter: blur(10px);
             box-sizing: border-box; border-top: 1px solid rgba(0,0,0,0.1);
             display: flex; flex-direction: column; gap: 10px;
         }
         .share-row { display: flex; gap: 10px; width: 100%; }
         .share-btn {
-            flex: 1; padding: 16px; border-radius: 14px; border: none; font-size: 17px; font-weight: 700; cursor: pointer;
+            flex: 1; padding: 14px; border-radius: 12px; border: none; font-size: 17px; font-weight: 700; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15); color: white;
         }
@@ -190,10 +210,10 @@
         .btn-whatsapp { background-color: #25D366; }
         
         .reset-link {
-            text-align: center; color: var(--ios-red); font-size: 15px; font-weight: 500; text-decoration: none; margin-top: 5px; cursor: pointer; padding: 10px;
+            text-align: center; color: var(--ios-red); font-size: 14px; font-weight: 500; text-decoration: none; margin-top: 5px; cursor: pointer; padding: 10px;
         }
         
-        .empty-state { text-align: center; color: var(--ios-gray); padding: 40px 20px; font-style: italic; font-size: 17px; }
+        .empty-state { text-align: center; color: var(--ios-gray); padding: 40px 20px; font-style: italic; font-size: 16px; }
         .blue-icon { color: var(--ios-blue); }
         .green-icon { color: var(--ios-green); }
         .purple-icon { color: var(--ios-purple); }
@@ -210,8 +230,6 @@
         .btn-cancel { background: #E5E5EA; color: #000; }
         .btn-save { background: var(--ios-blue); color: #fff; }
 
-        #connection-status { font-size: 12px; color: #8E8E93; margin-top: 5px; }
-
     </style>
 </head>
 <body>
@@ -223,7 +241,7 @@
             <span id="baby-name-display">BABY</span> 
             <span style="font-size:12px; color: #8E8E93;">✏️</span>
         </div>
-        <div id="connection-status">Connecting...</div>
+        <div id="connection-status">Initializing...</div>
     </div>
 
     <header>
@@ -275,11 +293,11 @@
                 <div class="list-item">
                     <div class="icon-box indigo-icon">🛏️</div>
                     <div class="input-row" style="justify-content: flex-start;">
-                        <div class="time-wrapper" style="flex: 1;">
+                        <div class="time-wrapper">
                             <input type="time" id="nap-start">
                         </div>
-                        <span style="margin: 0 5px; font-weight:600; color: #8E8E93;">to</span>
-                        <div class="time-wrapper" style="flex: 1;">
+                        <span style="margin: 0 4px; font-weight:600; color: #8E8E93; font-size: 14px;">to</span>
+                        <div class="time-wrapper">
                             <input type="time" id="nap-end">
                         </div>
                         <button class="add-btn" style="margin-left: auto;" onclick="addNap()">
@@ -292,7 +310,7 @@
 
         <div class="list-group">
             <div class="list-header">Diapers</div>
-            <div class="card" style="padding: 16px;">
+            <div class="card" style="padding: 12px;">
                 <div class="segmented-control">
                     <div class="segment-opt active" onclick="selectDiaper('Soft', this)">Soft</div>
                     <div class="segment-opt" onclick="selectDiaper('Hard', this)">Hard</div>
@@ -323,7 +341,7 @@
     <div class="list-group">
         <div class="list-header">Daily Log</div>
         <div class="card" id="log-list">
-            <div class="empty-state">Loading logs...</div>
+            <div class="empty-state">Connecting to Database...</div>
         </div>
     </div>
 
@@ -364,7 +382,7 @@
 </div>
 
 <script>
-    // --- FIREBASE CONFIGURATION (INTEGRADA) ---
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyDiqYfep_8Myjo1oJ688hLx1UT2O1gzWyM",
         authDomain: "babylogapp-cb457.firebaseapp.com",
@@ -378,13 +396,14 @@
     let db;
     let isFirebaseReady = false;
 
+    // Initialize
     try {
         if (firebase.apps.length === 0) {
             firebase.initializeApp(firebaseConfig);
         }
         db = firebase.database();
         isFirebaseReady = true;
-        document.getElementById('connection-status').innerText = "Cloud Connected ✅";
+        document.getElementById('connection-status').innerText = "Cloud Active ✅";
     } catch (e) {
         console.error("Firebase Error", e);
         document.getElementById('connection-status').innerText = "Cloud Error ❌";
@@ -404,10 +423,12 @@
         loadName();
         updateDateDisplay();
         setDefaultTimes();
+        // FORCE LOAD FROM CLOUD immediately
         listenToData();
     };
 
-    // --- TIMEZONE FIX: LOCAL DATE KEY ---
+    // --- CRITICAL FIX: LOCAL DATE KEY GENERATOR ---
+    // Forces date to be strictly "YYYY-MM-DD" based on user's device clock, ignoring UTC
     function getLocalDateKey(dateObj) {
         const year = dateObj.getFullYear();
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -415,14 +436,15 @@
         return `${year}-${month}-${day}`;
     }
 
-    // --- FIREBASE LISTEN ---
+    // --- FIREBASE SYNC ---
     function listenToData() {
         if (!isFirebaseReady) return;
         
         const dateKey = getLocalDateKey(currentDate);
+        // Visual Feedback
+        document.getElementById('log-list').innerHTML = '<div class="empty-state">Loading data from cloud...</div>';
+        
         const dbRef = db.ref('baby_logs/' + dateKey);
-
-        document.getElementById('log-list').innerHTML = '<div class="empty-state">Loading logs...</div>';
 
         dbRef.on('value', (snapshot) => {
             const data = snapshot.val();
@@ -433,17 +455,13 @@
             }
             renderLogs();
         }, (error) => {
-            console.error("Read Error", error);
-            document.getElementById('log-list').innerHTML = '<div class="empty-state" style="color:red">Permission Denied. Check Rules.</div>';
+            document.getElementById('connection-status').innerText = "PERMISSION DENIED 🔒";
+            document.getElementById('log-list').innerHTML = '<div class="empty-state" style="color:red">Database Locked. Check Firebase Rules.</div>';
         });
     }
 
-    // --- SAVE WITH ERROR CHECK ---
     function saveToCloud() {
-        if (!isFirebaseReady) {
-            alert("Firebase not initialized.");
-            return;
-        }
+        if (!isFirebaseReady) return;
         const dateKey = getLocalDateKey(currentDate);
         
         let updates = {};
@@ -451,14 +469,16 @@
             updates[log.id] = log;
         });
         
-        const ref = db.ref('baby_logs/' + dateKey);
-        
-        // Use Set (Overwrite day)
-        const promise = (logs.length > 0) ? ref.set(updates) : ref.remove();
-        
-        promise.catch((error) => {
-            alert("SAVE FAILED: Permission Denied.\n\nPlease check your Firebase Realtime Database Rules.\nThey should be 'read': true, 'write': true.");
-        });
+        // Ensure node is clean
+        if (logs.length > 0) {
+            db.ref('baby_logs/' + dateKey).set(updates).catch(err => {
+                alert("ERROR SAVING: " + err.message + "\nCheck your Firebase Console Rules.");
+            });
+        } else {
+            db.ref('baby_logs/' + dateKey).remove().catch(err => {
+                alert("ERROR DELETING: " + err.message);
+            });
+        }
     }
 
     function setDefaultTimes() {
@@ -477,8 +497,8 @@
         updateDateDisplay();
         
         if(isFirebaseReady) {
-            db.ref('baby_logs').off(); 
-            listenToData(); 
+            db.ref('baby_logs').off(); // Detach old
+            listenToData(); // Attach new
         } else {
             logs = [];
             renderLogs();
@@ -489,10 +509,8 @@
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         document.getElementById('date-display').innerText = currentDate.toLocaleDateString('en-US', options);
         
-        const yyyy = currentDate.getFullYear();
-        const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const dd = String(currentDate.getDate()).padStart(2, '0');
-        datePicker.value = `${yyyy}-${mm}-${dd}`;
+        const dateKey = getLocalDateKey(currentDate);
+        datePicker.value = dateKey; // Force match
         
         const today = new Date();
         const isToday = today.toDateString() === currentDate.toDateString();
@@ -525,9 +543,10 @@
 
     function addFood() {
         const val = document.getElementById('food-input').value;
+        if(!val) return;
+        // Use current time just for sorting order
         const now = new Date();
         const timeString = now.toTimeString().substring(0, 5);
-        if(!val) return;
         addEntry('Food', val, '', '🍽️', 'var(--ios-green)', timeString);
         document.getElementById('food-input').value = '';
     }
@@ -537,7 +556,7 @@
         const end = document.getElementById('nap-end').value;
         if(!start || !end) return;
 
-        // Calc Duration for Display
+        // Calc Duration
         const d1 = new Date("2000-01-01 " + start);
         const d2 = new Date("2000-01-01 " + end);
         let diffMs = d2 - d1;
@@ -574,13 +593,14 @@
     }
 
     function addEntry(type, value, detail, icon, color, timeStr, endTimeStr = null) {
-        const entryDate = new Date(currentDate);
+        // We still need a Date object for sorting within the day
+        const entryDate = new Date();
         const [hours, minutes] = timeStr.split(':');
         entryDate.setHours(hours, minutes);
 
         const entry = {
             id: Date.now().toString(),
-            dateStr: currentDate.toDateString(),
+            dateStr: currentDate.toDateString(), // Display purpose
             sortTime: entryDate.getTime(),
             displayTime: convertTo12Hour(timeStr),
             rawTime: timeStr,
@@ -709,7 +729,7 @@
         dayLogs = sortLogs(dayLogs);
 
         if(dayLogs.length === 0) {
-            list.innerHTML = '<div class="empty-state">No entries for this date.</div>';
+            list.innerHTML = '<div class="empty-state">No entries found for this date.</div>';
             return;
         }
 
@@ -759,7 +779,7 @@
                 report += `🍽️ ${val}\n`; 
             }
             else if (log.type === 'Nap') {
-                // CORRECT NAP FORMAT
+                // FIXED NAP FORMAT: Icon(Duration) \n Time Range
                 const durationOnly = val.replace("Nap ", ""); 
                 report += `🛏️${durationOnly}\n${log.detail}\n`; 
             }
