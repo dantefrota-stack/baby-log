@@ -544,10 +544,12 @@
     }
 
     function loadName() {
+        // Keep local behavior first (fast)
         const storedName = localStorage.getItem('babyName');
         if (storedName) babyName = storedName;
         document.getElementById('baby-name-display').innerText = (babyName || "BABY").toUpperCase();
 
+        // NEW: Cloud-synced name (same on every device)
         if (!isFirebaseReady) return;
 
         const nameRef = db.ref('baby_logs/__settings/babyName');
@@ -558,11 +560,6 @@
                 localStorage.setItem('babyName', babyName);
                 document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
             } else {
-                const local = localStorage.getItem('babyName');
-                if (local && local.trim() !== '') nameRef.set(local.trim());
-            }
-        });
-    } else {
                 // Seed cloud from local if cloud is empty
                 const local = localStorage.getItem('babyName');
                 if (local && local.trim() !== '') nameRef.set(local.trim());
@@ -571,7 +568,7 @@
     }
 
     function editName() {
-        // Use modal instead of prompt (works reliably on iOS/Android/PC)
+        // Modal (more reliable than prompt across iPhone/Android/PC)
         const modal = document.getElementById('name-modal');
         const input = document.getElementById('name-input');
         if (input) input.value = babyName || "";
@@ -591,16 +588,13 @@
             localStorage.setItem('babyName', babyName);
             document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
 
-            // Cloud sync so all devices match
+            // Push to cloud so all devices update
             if (isFirebaseReady) {
                 db.ref('baby_logs/__settings/babyName').set(babyName);
             }
         }
         closeNameModal();
     }
-        }
-    }
-}
 
     // --- ADD ACTIONS ---
     function addFormula() {
