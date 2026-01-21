@@ -528,9 +528,36 @@
     }
 
     function loadName() {
+        // Fast local render first
         const storedName = localStorage.getItem('babyName');
-        if (storedName) babyName = storedName;
-        document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
+        if (storedName && storedName.trim()) {
+            babyName = storedName.trim();
+        }
+        document.getElementById('baby-name-display').innerText = (babyName || "BABY").toUpperCase();
+
+        // Cloud-synced name (shared across all devices)
+        if (!isFirebaseReady) return;
+
+        // Keep one listener
+        if (window.__babyNameRef) return;
+
+        window.__babyNameRef = db.ref('settings/babyName');
+        window.__babyNameRef.on('value', (snap) => {
+            const cloudName = snap.val();
+            if (typeof cloudName === 'string' && cloudName.trim()) {
+                babyName = cloudName.trim();
+                localStorage.setItem('babyName', babyName);
+                document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
+            } else {
+                // If cloud is empty but local has a value, seed cloud once
+                const local = localStorage.getItem('babyName');
+                if (local && local.trim()) {
+                    window.__babyNameRef.set(local.trim());
+                }
+            }
+        }, (err) => {
+            console.error("Name sync error:", err);
+        });
     }
 
     function editName() {
@@ -539,8 +566,14 @@
             babyName = newName.trim();
             localStorage.setItem('babyName', babyName);
             document.getElementById('baby-name-display').innerText = babyName.toUpperCase();
+
+            // Push to cloud so every device updates
+            if (isFirebaseReady) {
+                db.ref('settings/babyName').set(babyName).catch(err => console.error("Failed to save name:", err));
+            }
         }
     }
+}
 
     // --- ADD ACTIONS ---
     function addFormula() {
@@ -800,9 +833,9 @@
         const dateStr = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
         let report = `${babyName.toUpperCase()}'S DAILY REPORT\n`;
-        report += `Date: ${dateStr}\n`;
-        report += `----------------------------\n\n`;
+        report += `${dateStr}
 
+`;
         dayLogs.forEach(log => {
             const time = log.displayTime || '--:--';
             let val = (log.value || '').toString().replace(/💩|💧/g, '').trim();
@@ -824,8 +857,6 @@
                 report += `📝 ${val}\n`;
             }
         });
-
-        report += `\n----------------------------\n`;
 
         navigator.clipboard.writeText(report).catch(err => console.log('Copy failed', err));
 
